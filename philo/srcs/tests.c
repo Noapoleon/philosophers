@@ -17,3 +17,20 @@ int	test_colors() // remove later
 	printf("%03ld X " COL_SLP "is sleeping" COL_RST "\n", usecs);
 	return (0);
 }
+
+int	show_philos(t_vars *vars)
+{
+	int	i;
+	t_philo	*curr;
+
+	i = 0;
+	while (i < vars->num_philos)
+	{
+		curr = &vars->philos[i];
+		printf("Philo #%d:\n", curr->pos);
+		printf("prev -> %p\n", curr->prev);
+		printf("next -> %p\n\n", curr->next);
+		++i;
+	}
+	return (0);
+}
