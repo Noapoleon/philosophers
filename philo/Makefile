@@ -11,15 +11,17 @@ RM	=	rm -rf
 
 # Compiler Options
 CC		=	cc
-CFLAGS	=	-Wall -Wextra -Werror
+CFLAGS	=	-Wall -Wextra -Werror -MD -pthread
 CINCS	=	-I./$(INCDIR)
 
 # Files
 SRCS	:=	philo.c \
-			utils.c
+			utils.c \
+			tests.c
 OBJS	:=	$(SRCS:.c=.o)
 SCRS	:=	$(addprefix $(SRCDIR)/, $(SRCS))
 OBJS	:=	$(addprefix $(OBJDIR)/, $(OBJS))
+INCS	:= 
 
 all: $(NAME)
 
@@ -28,6 +30,7 @@ $(NAME): $(OBJS)
 
 clean:
 	$(RM) $(OBJS)
+	$(RM) $(OBJS:.o=.d)
 
 fclean: clean
 	$(RM) $(NAME)
@@ -39,5 +42,7 @@ $(OBJDIR):
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 	$(CC) $(CFLAGS) $(CINCS) -c $< -o $@
+
+-include $(OBJS:.o=.d)
 
 .PHONY: all clean fclean re

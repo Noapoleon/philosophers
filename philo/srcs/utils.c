@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 23:05:19 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/13 03:10:03 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/13 16:08:12 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,15 @@ int	vars_setup(t_vars *vars, int ac, char **av)
 		vars->num_meals_min = -2;
 	if (print_errors(vars) != 0)
 		return (-1);
+//	vars->philos = malloc(sizeof(t_philo) * vars->num_philo);
+//	if (vars->philos == NULL)
+//		return (printf("[PHILO ERROR] vars_setup > Failed to allocate philos-1);
 	return (0);
 }
 
 // Parses string into integer, string must represent a positive non-zero integer
+// Formatting is very strict, only numbers are allowed, no whitespace and no
+// negatives values
 // Returns parsed int or -1 in case of error
 int	atoi_philo(char *str)
 {
@@ -43,10 +48,6 @@ int	atoi_philo(char *str)
 	if (!str)
 		return (-1);
 	i = 0;
-	while (str[i] && ((str[i] >= 9 && str[i] <= 13) || str[i] == ' '))
-		++i;
-	if (str[i] < '0' || str[i] > '9')
-		return (-1);
 	n = 0;
 	while (str[i] && str[i] >= '0' && str[i] <= '9')
 	{
@@ -55,7 +56,7 @@ int	atoi_philo(char *str)
 			return (-1);
 		++i;
 	}
-	if (n == 0)
+	if (n == 0 || str[i] != '\0')
 		return (-1);
 	return (n);
 }
@@ -68,15 +69,15 @@ int	print_errors(t_vars	*vars)
 
 	errors = 0;
 	if (vars->num_philo == -1 && ++errors)
-		printf("[PHILO ERROR] number_of_philosophers: bad value\n");
+		printf("[PHILO ERROR] number_of_philosophers: bad format\n");
 	if (vars->time_die == -1 && ++errors)
-		printf("[PHILO ERROR] time_to_die: bad value\n");
+		printf("[PHILO ERROR] time_to_die: bad format\n");
 	if (vars->time_eat == -1 && ++errors)
-		printf("[PHILO ERROR] time_to_eat: bad value\n");
+		printf("[PHILO ERROR] time_to_eat: bad format\n");
 	if (vars->time_sleep == -1 && ++errors)
-		printf("[PHILO ERROR] time_to_sleep: bad value\n");
+		printf("[PHILO ERROR] time_to_sleep: bad format\n");
 	if (vars->num_meals_min == -1 && ++errors)
 		printf("[PHILO ERROR] number_of_times_each_philosopher_should_eat: \
-bad value\n");
+bad format\n");
 	return (errors);
 }
