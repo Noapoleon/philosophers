@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:58:59 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/13 22:38:54 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/14 13:18:11 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ int	main(int ac, char **av)
 {
 	t_vars	vars;
 
+	srand(time(NULL));
 	if (vars_setup(&vars, ac, av) == -1)
 		return (printf(PHILO_ERR PE_SETUP), 1);
 	//test_colors();

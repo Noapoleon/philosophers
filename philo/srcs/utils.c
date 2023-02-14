@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 23:05:19 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/13 22:41:58 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/14 13:30:28 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,10 +106,13 @@ int	make_philos(t_vars *vars)
 
 void	*dummy_routine(void *arg)
 {
-	const t_philo	*philo = arg;
-
-	printf("Creating philo #%d...\n", philo->pos);
-	return (NULL); // wtf am i supposed to send here?
+	(void)arg;
+	int	value = (rand() % 2000) + 1;
+	int	*result	= malloc(sizeof(int));
+	if (result == NULL)
+		return (NULL);
+	*result = value;
+	return ((void *)result);
 }
 
 int	start_philos(t_vars *vars)
@@ -119,8 +122,9 @@ int	start_philos(t_vars *vars)
 	i = 0;
 	while (i < vars->num_philos)
 	{
-		if (pthread_create(&vars->philos[i].thread, NULL, &dummy_routine, &vars->philos[i]) != 0)
+		if (pthread_create(&vars->philos[i].thread, NULL, &dummy_routine, NULL) != 0)
 			return (printf(PHILO_ERR PE_CREATE), -1);
+		printf("Created philo #%d...\n", i + 1);
 		++i;
 	}
 	return (0);
@@ -129,13 +133,17 @@ int	start_philos(t_vars *vars)
 int	join_philos(t_vars *vars)
 {
 	int	i;
+	int	*res;
 
 	i = 0;
 	while (i < vars->num_philos)
 	{
-		if (pthread_join(vars->philos[i].thread, NULL) != 0)
+		if (pthread_join(vars->philos[i].thread, (void **)&res) != 0)
 			return (printf(PHILO_ERR PE_JOIN), -1);
-		printf("Thread #%d finished.\n", i + 1);
+		if (res == NULL)
+			printf("Thread #%d finished. Return %p\n", i + 1, res);
+		else
+			printf("Thread #%d finished. Return %d\n", i + 1, *res);
 		++i;
 	}
 	return (0);
