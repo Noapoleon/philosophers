@@ -6,24 +6,26 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:58:59 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/14 13:18:11 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/16 04:11:12 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+// Unimportant function
 int	main(int ac, char **av)
 {
+	t_philo		*philos;
 	t_vars	vars;
 
-	srand(time(NULL));
-	if (vars_setup(&vars, ac, av) == -1)
-		return (printf(PHILO_ERR PE_SETUP), 1);
-	//test_colors();
-	if (start_philos(&vars) == -1)
-		return (printf(PHILO_ERR PE_START_FUNC), 1);
-	if (join_philos(&vars) == -1)
-		return (printf(PHILO_ERR PE_JOIN_FUNC), 1);
-	philo_terminate(&vars);
+	if (ac != 5 && ac != 6)
+		return (printf(USAGE1 USAGE2 USAGE3, av[0]), 1);
+	if (philo_setup(&philos, &vars, ac, av) == -1)
+		return (2);
+	if (start_philos(philos, &vars) == -1)
+		return (philo_terminate(philos, &vars), 3);
+	if (join_philos(philos, &vars) == -1)
+		return (philo_terminate(philos, &vars), 4);
+	philo_terminate(philos, &vars);
 	return (0);
 }

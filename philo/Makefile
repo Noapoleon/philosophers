@@ -16,7 +16,10 @@ CINCS	=	-I./$(INCDIR)
 
 # Files
 SRCS	:=	philo.c \
+			setup.c \
 			utils.c \
+			threads.c \
+			states.c \
 			tests.c
 OBJS	:=	$(SRCS:.c=.o)
 SCRS	:=	$(addprefix $(SRCDIR)/, $(SRCS))

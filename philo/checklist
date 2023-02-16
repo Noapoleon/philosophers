@@ -1,10 +1,27 @@
 TODO:
-	- ansi color codes for output
+	- when encountering errors in a thread (protected functions and such) change
+	  the return value, by default 
+	- minimum meals could be implemented with a decrementing counter and a
+	  seperate singular thread could loop that and check that the counter has
+	  not yet reached 0, if it did set ret to 1, need to add mutexes then
 
 QUESTIONS:
-	- the fuck is a mutex ?
-	- the fuck are threads specifically ?
+	- [OK] the fuck is a mutex ?
+	- [OK] the fuck are threads specifically ?
+	- [OK] is it worth it to make a generalized function for all changes in state or
+	  should i make one function per action (easier, probably neater)?
+	- [NO] with the addition of functions for changing states it could make it easier 
+	  to protect ALL calls to pthread_mutex_lock, SHOULD I DO IT?? Small issue:
+	  right now pthread_mutex_lock is in the print_state function, meaning I'd
+	  have to change it to return -1 if I want to do this
 
 DONE:
+	- ansi color codes for output
+	- find out types of timeval for proper printf
+	- init all mutexes in setup and destroy them in philo_terminate()
+	- function(s) for for changing states which combine locking, setting,
+	  printing and unlocking
+	- terminate function right now is wack, need to fix calls to free and
+	  destroy
 
 CHANGE:
