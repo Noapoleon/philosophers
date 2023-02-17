@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:39:09 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/17 00:55:26 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/17 19:16:11 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ void	set_print_width(t_vars *vars)
 {
 	int	pow;
 	int	len;
+
 	pow = 1;
 	len = 1;
 	while (vars->num_philos / pow >= 10)

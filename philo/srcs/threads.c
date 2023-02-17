@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:52:58 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/17 18:53:32 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/17 19:41:21 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,9 @@ void	*philosophing(void *arg)
 
 	philo = arg;
 	vars = philo->vars;
-	set_meal_time(philo); // might complain return value is ignored, maybe use (void)
+	set_meal_time(philo);
 	if (philo->pos % 2)
 		usleep(200);
-	//set_meal_time(philo); // might complain return value is ignored, maybe use (void) // old position, testing with above one
 	while (1)
 	{
 		if (print_state(philo, vars, MSG_THK, NOT_EATING) != 0)
@@ -63,10 +62,7 @@ void	*monitoring(void *arg) // monitor routine
 		now = get_now_time();
 		pthread_mutex_lock(&philo->last_mutex);
 		if ((now - philo->last) * 1000 >= vars->time_die)
-		{
 			set_death(vars, philo, now);
-			//printf("death set here\n");
-		}
 		pthread_mutex_unlock(&philo->last_mutex);
 	}
 	return (NULL);
@@ -82,7 +78,7 @@ int	start_sim(t_philo *philos, t_monitor *monitors, t_vars *vars)
 	while (i < vars->num_philos)
 	{
 		if (pthread_create(&philos[i].thread, NULL, &philosophing,
-			&philos[i]) != 0)
+				&philos[i]) != 0)
 		{
 			pthread_mutex_lock(&vars->ret_mutex);
 			vars->ret = 1;
@@ -91,7 +87,7 @@ int	start_sim(t_philo *philos, t_monitor *monitors, t_vars *vars)
 			return (printf(PHILO_ERR PE_CREATE, i + 1), -1);
 		}
 		if (pthread_create(&monitors[i].thread, NULL, &monitoring,
-			&monitors[i]) != 0)
+				&monitors[i]) != 0)
 		{
 			pthread_mutex_lock(&vars->ret_mutex);
 			vars->ret = 1;

@@ -6,22 +6,13 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/16 00:16:29 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/17 19:02:12 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/17 19:38:54 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long	get_now_time()
-{
-	struct timeval	tv;
-	long	now;
-
-	gettimeofday(&tv, NULL);
-	now = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-	return (now);
-}
-
+// Sets the meal time in the philo struct safely by locking the mutex
 long	set_meal_time(t_philo *philo)
 {
 	long	now;
@@ -54,6 +45,9 @@ int	print_state(t_philo *philo, t_vars *vars, char *action, int eating)
 	return (0);
 }
 
+// Locks ret mutex and outputs the death message
+// Setting ret to 1 will prevent living philosophers to print further status
+// messages
 void	set_death(t_vars *vars, t_philo *philo, long now)
 {
 	pthread_mutex_lock(&vars->print_mutex);
@@ -86,12 +80,12 @@ int	forking(t_philo	*philo, t_vars *vars)
 }
 
 // Eats for time_to_eat
-int	eating(t_philo	*philo, t_vars *vars)
+int	eating(t_philo *philo, t_vars *vars)
 {
 	if (print_state(philo, vars, MSG_EAT, EATING) != 0)
 		return (pthread_mutex_unlock(&philo->fork),
 			pthread_mutex_unlock(&philo->next->fork), 1);
-	usleep(vars->time_eat); // check weird delay thing (about 10ms, which is BAD!!)
+	usleep(vars->time_eat);
 	++philo->num_meals; // protect with mutex for monitor
 	pthread_mutex_unlock(&philo->fork);
 	pthread_mutex_unlock(&philo->next->fork);

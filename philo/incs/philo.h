@@ -3,23 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/15 17:10:18 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/16 23:51:51 by nlegrand         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:54:17 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/12 23:09:49 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/17 19:39:58 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +20,6 @@
 # include <pthread.h>
 # include <limits.h>
 # include <stdlib.h>
-
 
 # define USAGE1	"Usage: %s <number_of_philosophers> <time_to_die> "
 # define USAGE2	"<time_to_eat> <time_to_sleep> "
@@ -75,14 +61,14 @@ struct s_philo
 	pthread_t		thread;
 	pthread_mutex_t	fork;
 	pthread_mutex_t	last_mutex;
-	long			last; // probably should protect with mutex
-	int				num_meals; // that too
+	long			last;
+	int				num_meals; // protect with mutex
 	t_vars			*vars;
 	t_philo			*next;
 };
 struct	s_monitor
 {
-	int	pos;
+	int			pos;
 	pthread_t	thread;
 	t_philo		*philo;
 	t_vars		*vars;
@@ -104,6 +90,7 @@ struct s_vars
 // utils.c
 int		atoi_philo(char *str);
 void	destroy_n_mutexes(t_philo *philos, int count);
+long	get_now_time();
 void	terminate_sim(t_philo *philos, t_monitor *monitors, t_vars *vars);
 // setup.c
 int		vars_setup(t_vars *vars, int ac, char **av);
@@ -119,9 +106,8 @@ void	*philosophing(void *arg);
 void	*monitoring(void *arg);
 int		start_sim(t_philo *philos, t_monitor *monitors, t_vars *vars);
 int		join_n_threads(t_philo *philos, t_monitor *monitors,
-	int num_philos, int num_monitors);
+			int num_philos, int num_monitors);
 // threads2.c
-long	get_now_time();
 long	set_meal_time(t_philo *philo);
 int		print_state(t_philo *philo, t_vars *vars, char *action, int eating);
 void	set_death(t_vars *vars, t_philo *philo, long now);

@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/16 18:52:49 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/16 20:06:51 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/17 19:41:51 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ int	sim_setup(t_philo **philos, t_monitor **monitors, t_vars *vars)
 // Returns 0 on success and -1 otherwise
 int	make_philos(t_philo **philos, t_vars *vars)
 {
-	t_philo	*curr; // can be removed if needs less lines at the expense of slightly worse readability
-	int	i;
+	t_philo	*curr;
+	int		i;
 
 	*philos = malloc(sizeof(t_philo) * vars->num_philos);
 	if (*philos == NULL)
@@ -39,7 +39,7 @@ int	make_philos(t_philo **philos, t_vars *vars)
 	{
 		curr = &(*philos)[i];
 		curr->pos = i + 1;
-		curr->last = 0; // troubling with monitors, can probably be fixed if monitors are opened right after their respective philos
+		curr->last = 0;
 		curr->num_meals = 0;
 		curr->vars = vars;
 		curr->next = *philos + (i != vars->num_philos - 1) * (i + 1);
@@ -53,7 +53,7 @@ int	make_philos(t_philo **philos, t_vars *vars)
 
 // Allocates monitors
 // Returns 0 on success and -1 otherwise
-int make_monitors(t_monitor **monitors, t_philo *philos, t_vars *vars)
+int	make_monitors(t_monitor **monitors, t_philo *philos, t_vars *vars)
 {
 	int	i;
 

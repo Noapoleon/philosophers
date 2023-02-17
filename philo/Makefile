@@ -50,4 +50,17 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 
 -include $(OBJS:.o=.d)
 
+norm:
+	@echo "\033[44;97;1m                 \033[0m"
+	@echo "\033[44;97;1m  SOURCES NORM:  \033[45;97;1m  \033[0m"
+	@echo "\033[44;97;1m                 \033[45;97;1m  \033[0m"
+	@echo " \033[45;97;1m                  \033[0m"
+	@norminette $(SRCDIR) | awk '{if ($$NF == "OK!") { print "\033[0;92m"$$0"\033[0m" } else if ($$NF == "Error!") { print "\033[41;97;5;1m"$$0"\033[0m" } else { print }}'
+	@echo "\n"
+	@echo "\033[44;97;1m                  \033[0m"
+	@echo "\033[44;97;1m  INCLUDES NORM:  \033[45;97;1m  \033[0m"
+	@echo "\033[44;97;1m                  \033[45;97;1m  \033[0m"
+	@echo " \033[45;97;1m                   \033[0m"
+	@norminette $(INCDIR) | awk '{if ($$NF == "OK!") { print "\033[0;92m"$$0"\033[0m" } else if ($$NF == "Error!") { print "\033[41;97;5;1m"$$0"\033[0m" } else { print }}'
+
 .PHONY: all clean fclean re

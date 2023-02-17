@@ -11,6 +11,8 @@ TODO:
 	  file for all philo stuff (new philo.c), also rename state.c (bad name)
 	- right now im gonna do a dirty implementation of the monitors, it will
 	  really need cleaning later
+	- optimization in monitor routine where usleep for time left until death
+	  minus 10 ms
 
 QUESTIONS:
 	- [OK] the fuck is a mutex ?
