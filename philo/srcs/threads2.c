@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/16 00:16:29 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/17 00:54:27 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/17 19:02:12 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ int	print_state(t_philo *philo, t_vars *vars, char *action, int eating)
 	pthread_mutex_lock(&vars->print_mutex);
 	pthread_mutex_lock(&vars->ret_mutex);
 	if (vars->ret)
-		return (pthread_mutex_unlock(&vars->print_mutex), 1);
+		return (pthread_mutex_unlock(&vars->ret_mutex),
+			pthread_mutex_unlock(&vars->print_mutex), 1);
 	pthread_mutex_unlock(&vars->ret_mutex);
 	printf("\033[7;1m%05ld\033[0m %*.d %s", now - vars->start,
 		vars->print_width, philo->pos, action);

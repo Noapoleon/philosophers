@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:52:58 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/17 01:10:50 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/17 18:53:32 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	*monitoring(void *arg) // monitor routine
 		if ((now - philo->last) * 1000 >= vars->time_die)
 		{
 			set_death(vars, philo, now);
-			printf("death set here\n");
+			//printf("death set here\n");
 		}
 		pthread_mutex_unlock(&philo->last_mutex);
 	}
