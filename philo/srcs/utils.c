@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 23:05:19 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/16 04:20:43 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/16 21:27:03 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,15 +37,6 @@ int	atoi_philo(char *str)
 	return (n);
 }
 
-// Frees and destroys elements from t_philo and t_vars
-void	philo_terminate(t_philo *philos, t_vars *vars)
-{
-	destroy_n_mutexes(philos, vars->num_philos);
-	pthread_mutex_destroy(&vars->print_mutex); // might cause undefined behavior when setup fails early
-	pthread_mutex_destroy(&vars->ret_mutex);
-	free(philos);
-}
-
 // Helper function for setup when mutex init fails to destroy previous ones
 void	destroy_n_mutexes(t_philo *philos, int count)
 {
@@ -53,5 +44,19 @@ void	destroy_n_mutexes(t_philo *philos, int count)
 
 	i = 0;
 	while (i < count)
-		pthread_mutex_destroy(&philos[i++].fork);
+	{
+		pthread_mutex_destroy(&philos[i].fork);
+		pthread_mutex_destroy(&philos[i].last_mutex);
+		++i;
+	}
+}
+
+// Frees and destroys elements from t_philo and t_vars
+void	terminate_sim(t_philo *philos, t_monitor *monitors, t_vars *vars)
+{
+	destroy_n_mutexes(philos, vars->num_philos);
+	pthread_mutex_destroy(&vars->print_mutex); // might cause undefined behavior when setup fails early
+	pthread_mutex_destroy(&vars->ret_mutex);
+	free(philos);
+	free(monitors);
 }

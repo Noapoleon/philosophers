@@ -13,13 +13,15 @@ RM	=	rm -rf
 CC		=	cc
 CFLAGS	=	-Wall -Wextra -Werror -MD -pthread
 CINCS	=	-I./$(INCDIR)
+DEBUG	=	-g3 -gdwarf-4
 
 # Files
 SRCS	:=	philo.c \
 			setup.c \
-			utils.c \
+			setup2.c \
 			threads.c \
-			states.c \
+			threads2.c \
+			utils.c \
 			tests.c
 OBJS	:=	$(SRCS:.c=.o)
 SCRS	:=	$(addprefix $(SRCDIR)/, $(SRCS))
@@ -29,7 +31,7 @@ INCS	:=
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+	$(CC) $(DEBUG) $(CFLAGS) $(OBJS) -o $(NAME)
 
 clean:
 	$(RM) $(OBJS)
@@ -44,7 +46,7 @@ $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
-	$(CC) $(CFLAGS) $(CINCS) -c $< -o $@
+	$(CC) $(DEBUG) $(CFLAGS) $(CINCS) -c $< -o $@
 
 -include $(OBJS:.o=.d)
 

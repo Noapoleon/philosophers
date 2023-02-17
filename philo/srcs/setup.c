@@ -6,24 +6,11 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:39:09 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/16 04:19:59 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/17 00:55:26 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-// Gets time values from program arguments and allocates t_philo array list
-int	philo_setup(t_philo **philos, t_vars *vars,
-	int ac, char **av)
-{
-	*philos = NULL;
-	if (vars_setup(vars, ac, av) == -1)
-		return (-1);
-	if (make_philos(philos, vars) == -1)
-		return (pthread_mutex_destroy(&vars->print_mutex),
-			pthread_mutex_destroy(&vars->ret_mutex), -1);
-	return (0);
-}
 
 // Parses ints from av to philo values and prints errors if some are present
 // Returns 0 for no errors and -1 otherwise
@@ -44,8 +31,6 @@ int	vars_setup(t_vars *vars, int ac, char **av)
 // Returns 0 on success and -1 otherwise
 int	get_inputs(t_vars *vars, int ac, char **av)
 {
-	struct timeval	tv;
-
 	vars->num_philos = atoi_philo(av[1]);
 	vars->time_die = atoi_philo(av[2]);
 	vars->time_eat = atoi_philo(av[3]);
@@ -59,8 +44,7 @@ int	get_inputs(t_vars *vars, int ac, char **av)
 	vars->time_die *= 1000;
 	vars->time_eat *= 1000;
 	vars->time_sleep *= 1000;
-	gettimeofday(&tv, NULL);
-	vars->start = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+	vars->start = 0;
 	set_print_width(vars);
 	return (0);
 }
@@ -98,34 +82,4 @@ void	set_print_width(t_vars *vars)
 		++len;
 	}
 	vars->print_width = len;
-}
-
-// Allocates and philos array list and inits mutexes
-// Returns 0 on success and -1 otherwise
-int	make_philos(t_philo **philos, t_vars *vars)
-{
-	t_philo	*curr;
-	int	i;
-
-	*philos = malloc(sizeof(t_philo) * vars->num_philos);
-	if (*philos == NULL)
-		return (printf(PHILO_ERR PE_ALLOC_PHILOS), -1);
-	curr = *philos;
-	i = 0;
-	while (i < vars->num_philos)
-	{
-		curr = &(*philos)[i];
-		curr->pos = i + 1;
-		curr->num_meals = 0;
-		curr->vars = vars;
-		if (i == vars->num_philos - 1)
-			curr->next = &(*philos)[0];
-		else
-			curr->next = &(*philos)[i + 1];
-		if (pthread_mutex_init(&curr->fork, NULL) != 0)
-			return (destroy_n_mutexes(*philos, i), free(*philos),
-				printf(PHILO_ERR PE_FORK_MUTEX, i + 1), -1);
-		++i;
-	}
-	return (0);
 }

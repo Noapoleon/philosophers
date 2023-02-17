@@ -6,23 +6,24 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:52:58 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/16 04:28:09 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/17 00:58:23 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-// Function executed at thread creation
-// Stops looping when a philosopher dies
-void	*routine(void *arg)
+// Philosopher threads routine
+void	*philosophing(void *arg)
 {
-	t_philo	*philo;
-	t_vars	*vars;
+	t_philo			*philo;
+	t_vars			*vars;
 
 	philo = arg;
 	vars = philo->vars;
+	set_meal_time(philo); // might complain return value is ignored, maybe use (void)
 	if (philo->pos % 2)
 		usleep(100);
+	//set_meal_time(philo); // might complain return value is ignored, maybe use (void) // old position, testing with above one
 	while (1)
 	{
 		if (print_state(philo, vars, MSG_THK, NOT_EATING) != 0)
@@ -33,37 +34,91 @@ void	*routine(void *arg)
 			return (NULL);
 		if (print_state(philo, vars, MSG_SLP, NOT_EATING) != 0)
 			return (NULL);
+		usleep(vars->time_sleep);
 	}
 	return (NULL); // could create other returns to handle errors
 }
 
+// Monitor threads routine
+void	*monitoring(void *arg) // monitor routine
+{
+	t_monitor	*monitor;
+	t_philo		*philo;
+	t_vars		*vars;
+	long		now;
+
+	monitor = arg;
+	philo = monitor->philo;
+	vars = monitor->vars;
+	usleep(100);
+	if (philo->pos % 2)
+		usleep(100);
+	while (1)
+	{
+		// usleep can probably be implemented easily inside here, - 1ms
+		pthread_mutex_lock(&vars->ret_mutex);
+		if (vars->ret)
+			return (pthread_mutex_unlock(&vars->ret_mutex), NULL);
+		pthread_mutex_unlock(&vars->ret_mutex);
+		now = get_now_time();
+		pthread_mutex_lock(&philo->last_mutex);
+		if ((now - philo->last) * 1000 >= vars->time_die)
+		{
+			set_death(vars, philo, now);
+			printf("death set here\n");
+		}
+		pthread_mutex_unlock(&philo->last_mutex);
+	}
+	return (NULL);
+}
+
 // Launches creation of all threads with the routine command
-int	start_philos(t_philo *philos, t_vars *vars)
+int	start_sim(t_philo *philos, t_monitor *monitors, t_vars *vars)
 {
 	int	i;
 
+	vars->start = get_now_time();
 	i = 0;
 	while (i < vars->num_philos)
 	{
-		if (pthread_create(&philos[i].thread, NULL, &routine, &philos[i]) != 0)
+		if (pthread_create(&philos[i].thread, NULL, &philosophing,
+			&philos[i]) != 0)
+		{
+			pthread_mutex_lock(&vars->ret_mutex);
+			vars->ret = 1;
+			pthread_mutex_unlock(&vars->ret_mutex);
+			join_n_threads(philos, monitors, i, i - 1);
 			return (printf(PHILO_ERR PE_CREATE, i + 1), -1);
+		}
+		if (pthread_create(&monitors[i].thread, NULL, &monitoring,
+			&monitors[i]) != 0)
+		{
+			pthread_mutex_lock(&vars->ret_mutex);
+			vars->ret = 1;
+			pthread_mutex_unlock(&vars->ret_mutex);
+			join_n_threads(philos, monitors, i, i);
+			return (printf(PHILO_ERR PE_CREATE, i + 1), -1);
+		}
 		++i;
 	}
 	return (0);
 }
 
-// Waits for all philosopher threads to return
-int	join_philos(t_philo *philos, t_vars *vars)
+// Joins threads for philosophers and monitors to the specified amount
+int	join_n_threads(t_philo *philos, t_monitor *monitors,
+	int num_philos, int num_monitors)
 {
 	int	i;
-	int	*res;
+	int	error;
 
+	error = 0;
 	i = 0;
-	while (i < vars->num_philos)
-	{
-		if (pthread_join(philos[i].thread, (void **)&res) != 0)
-			return (printf(PHILO_ERR PE_JOIN, i + 1), -1);
-		++i;
-	}
-	return (0);
+	while (philos && i < num_philos)
+		if (pthread_join(philos[i++].thread, NULL) != 0 && ++error)
+			printf(PHILO_ERR PE_JOIN_PHILO, i);
+	i = 0;
+	while (monitors && i < num_monitors)
+		if (pthread_join(monitors[i++].thread, NULL) != 0 && ++error)
+			printf(PHILO_ERR PE_JOIN_MONITOR, i);
+	return (error);
 }
