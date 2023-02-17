@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:52:58 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/17 00:58:23 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/17 01:10:50 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	*philosophing(void *arg)
 	vars = philo->vars;
 	set_meal_time(philo); // might complain return value is ignored, maybe use (void)
 	if (philo->pos % 2)
-		usleep(100);
+		usleep(200);
 	//set_meal_time(philo); // might complain return value is ignored, maybe use (void) // old position, testing with above one
 	while (1)
 	{
@@ -50,9 +50,9 @@ void	*monitoring(void *arg) // monitor routine
 	monitor = arg;
 	philo = monitor->philo;
 	vars = monitor->vars;
-	usleep(100);
+	usleep(200);
 	if (philo->pos % 2)
-		usleep(100);
+		usleep(200);
 	while (1)
 	{
 		// usleep can probably be implemented easily inside here, - 1ms
