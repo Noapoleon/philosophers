@@ -1,5 +1,5 @@
 # Project Structure
-NAME	=	philo
+NAME	=	philo_bonus
 SRCDIR	=	srcs
 OBJDIR	=	objs
 INCDIR	=	incs
@@ -21,19 +21,16 @@ CINCS	=	-I./$(INCDIR)
 DEBUG	=	-g3 -gdwarf-4
 
 # Files
-SRCS	:=	philo.c \
-			setup.c \
-			setup2.c \
-			threads.c \
-			threads2.c \
-			utils.c \
-			utils2.c
+SRCS	:=	philo_bonus.c \
+			utils_bonus.c
 OBJS	:=	$(SRCS:.c=.o)
 SCRS	:=	$(addprefix $(SRCDIR)/, $(SRCS))
 OBJS	:=	$(addprefix $(OBJDIR)/, $(OBJS))
 INCS	:= 
 
 all: $(NAME)
+
+bonus: all
 
 $(NAME): $(OBJS)
 	$(CC) $(DEBUG) $(CFLAGS) $(OBJS) -o $(NAME)
@@ -68,4 +65,4 @@ norm:
 	@echo " $(COL_BACK)                   $(COL_RESET)"
 	@norminette $(INCDIR) | awk '{if ($$NF == "OK!") { print "$(COL_OK)"$$0"$(COL_RESET)" } else if ($$NF == "Error!") { print "$(COL_ERR)"$$0"$(COL_RESET)" } else { print }}'
 
-.PHONY: all clean fclean re norm
+.PHONY: all clean fclean re bonus norm
