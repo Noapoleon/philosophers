@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/16 00:16:29 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/19 03:42:49 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/19 18:53:46 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,10 +67,21 @@ int	forking(t_philo	*philo, t_vars *vars)
 	pthread_mutex_lock(&philo->fork);
 	if (print_state(philo, vars, MSG_FRK, get_time()) != 0)
 		return (pthread_mutex_unlock(&philo->fork), 1);
-	pthread_mutex_lock(&philo->next->fork);
-	if (print_state(philo, vars, MSG_FRK, get_time()) != 0)
-		return (pthread_mutex_unlock(&philo->fork),
-			pthread_mutex_unlock(&philo->next->fork), 1);
+	while (1)
+	{
+		if (philo != philo->next)
+		{
+			pthread_mutex_lock(&philo->next->fork);
+			if (print_state(philo, vars, MSG_FRK, get_time()) != 0)
+				return (pthread_mutex_unlock(&philo->fork),
+					pthread_mutex_unlock(&philo->next->fork), 1);
+			break ;
+		}
+		pthread_mutex_lock(&vars->ret_mutex);
+		if (vars->ret)
+			return (1);
+		pthread_mutex_unlock(&vars->ret_mutex);
+	}
 	return (0);
 }
 

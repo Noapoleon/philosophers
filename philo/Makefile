@@ -8,7 +8,10 @@ INCDIR	=	incs
 RM	=	rm -rf
 
 # Colors
-COL_FRONT	=	\033[44;97;1m
+COL_FRONT	=	\033[44;37;1m
+COL_BACK	=	\033[40m
+COL_ERR		=	\033[41;37;5;1m
+COL_OK		=	\033[32;1m
 COL_RESET	=	\033[0m
 
 # Compiler Options
@@ -54,15 +57,15 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 
 norm:
 	@echo "$(COL_FRONT)                 $(COL_RESET)"
-	@echo "\033[44;97;1m  SOURCES NORM:  \033[45;97;1m  \033[0m"
-	@echo "\033[44;97;1m                 \033[45;97;1m  \033[0m"
-	@echo " \033[45;97;1m                  \033[0m"
-	@norminette $(SRCDIR) | awk '{if ($$NF == "OK!") { print "\033[0;92m"$$0"\033[0m" } else if ($$NF == "Error!") { print "\033[41;97;5;1m"$$0"\033[0m" } else { print }}'
+	@echo "$(COL_FRONT)  SOURCES NORM:  $(COL_BACK)  $(COL_RESET)"
+	@echo "$(COL_FRONT)                 $(COL_BACK)  $(COL_RESET)"
+	@echo " $(COL_BACK)                  $(COL_RESET)"
+	@norminette $(SRCDIR) | awk '{if ($$NF == "OK!") { print "$(COL_OK)"$$0"$(COL_RESET)" } else if ($$NF == "Error!") { print "$(COL_ERR)"$$0"$(COL_RESET)" } else { print }}'
 	@echo "\n"
-	@echo "\033[44;97;1m                  \033[0m"
-	@echo "\033[44;97;1m  INCLUDES NORM:  \033[45;97;1m  \033[0m"
-	@echo "\033[44;97;1m                  \033[45;97;1m  \033[0m"
-	@echo " \033[45;97;1m                   \033[0m"
-	@norminette $(INCDIR) | awk '{if ($$NF == "OK!") { print "\033[0;92m"$$0"\033[0m" } else if ($$NF == "Error!") { print "\033[41;97;5;1m"$$0"\033[0m" } else { print }}'
+	@echo "$(COL_FRONT)                  $(COL_RESET)"
+	@echo "$(COL_FRONT)  INCLUDES NORM:  $(COL_BACK)  $(COL_RESET)"
+	@echo "$(COL_FRONT)                  $(COL_BACK)  $(COL_RESET)"
+	@echo " $(COL_BACK)                   $(COL_RESET)"
+	@norminette $(INCDIR) | awk '{if ($$NF == "OK!") { print "$(COL_OK)"$$0"$(COL_RESET)" } else if ($$NF == "Error!") { print "$(COL_ERR)"$$0"$(COL_RESET)" } else { print }}'
 
 .PHONY: all clean fclean re
