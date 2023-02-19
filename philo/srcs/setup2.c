@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/16 18:52:49 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/17 19:41:51 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/19 03:45:30 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,14 +40,23 @@ int	make_philos(t_philo **philos, t_vars *vars)
 		curr = &(*philos)[i];
 		curr->pos = i + 1;
 		curr->last = 0;
-		curr->num_meals = 0;
+		curr->meals = 0;
 		curr->vars = vars;
 		curr->next = *philos + (i != vars->num_philos - 1) * (i + 1);
-		if (pthread_mutex_init(&curr->fork, NULL) != 0)
-			return (destroy_n_mutexes(*philos, i), free(*philos),
-				printf(PHILO_ERR PE_FORK_MUTEX, i + 1), -1);
+		if (make_philo_mutexes(curr, i) == -1)
+			return (destroy_n_mutexes(*philos, i), free(*philos), -1);
 		++i;
 	}
+	return (0);
+}
+
+int	make_philo_mutexes(t_philo *philo, int i)
+{
+	if (pthread_mutex_init(&philo->fork, NULL) != 0)
+		return (printf(PHILO_ERR PE_FORK_MUTEX, i + 1), -1);
+	if (pthread_mutex_init(&philo->last_mutex, NULL) != 0)
+		return (pthread_mutex_destroy(&philo->fork),
+			printf(PHILO_ERR PE_LAST_MUTEX, i + 1), -1);
 	return (0);
 }
 

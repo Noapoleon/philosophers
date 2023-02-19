@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:54:17 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/17 19:39:58 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/19 03:47:35 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@
 # define PE_PRINT_MUTEX		"Failed to initialize print mutex\n"
 # define PE_ALLOC_PHILOS	"Failed to allocate philos array list\n"
 # define PE_FORK_MUTEX		"Failed to initialize fork mutex %d\n"
+# define PE_LAST_MUTEX		"Failed to initialize last mutex %d\n"
+# define PE_MEALS_MUTEX		"Failed to initialize meal mutex %d\n"
 # define PE_CREATE			"Failed to create thread #%d\n"
 # define PE_JOIN_PHILO		"Failed to join philosopher thread #%d\n"
 # define PE_JOIN_MONITOR	"Failed to join monitor thread #%d\n"
@@ -62,7 +64,7 @@ struct s_philo
 	pthread_mutex_t	fork;
 	pthread_mutex_t	last_mutex;
 	long			last;
-	int				num_meals; // protect with mutex
+	int				meals;
 	t_vars			*vars;
 	t_philo			*next;
 };
@@ -85,13 +87,17 @@ struct s_vars
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	ret_mutex;
 	int				ret;
+	int				had_enough;
 };
 
 // utils.c
 int		atoi_philo(char *str);
 void	destroy_n_mutexes(t_philo *philos, int count);
-long	get_now_time();
+long	get_time(void);
+void	my_usleep(long delay);
 void	terminate_sim(t_philo *philos, t_monitor *monitors, t_vars *vars);
+//utils2.c
+void	wait_min_meals(t_vars *vars);
 // setup.c
 int		vars_setup(t_vars *vars, int ac, char **av);
 int		get_inputs(t_vars *vars, int ac, char **av);
@@ -100,25 +106,21 @@ void	set_print_width(t_vars *vars);
 // setup2.c
 int		sim_setup(t_philo **philos, t_monitor **monitors, t_vars *vars);
 int		make_philos(t_philo **philos, t_vars *vars);
+int		make_philo_mutexes(t_philo *philo, int i);
 int		make_monitors(t_monitor **monitors, t_philo *philos, t_vars *vars);
 // threads.c
 void	*philosophing(void *arg);
 void	*monitoring(void *arg);
 int		start_sim(t_philo *philos, t_monitor *monitors, t_vars *vars);
+int		launch_thread_duo(t_philo *philos, t_monitor *monitors, t_vars *vars,
+			int i);
 int		join_n_threads(t_philo *philos, t_monitor *monitors,
 			int num_philos, int num_monitors);
 // threads2.c
 long	set_meal_time(t_philo *philo);
-int		print_state(t_philo *philo, t_vars *vars, char *action, int eating);
-void	set_death(t_vars *vars, t_philo *philo, long now);
+int		print_state(t_philo *philo, t_vars *vars, char *action, long time);
+int		set_death(t_vars *vars, t_philo *philo, long now);
 int		forking(t_philo	*philo, t_vars *vars);
 int		eating(t_philo	*philo, t_vars *vars);
-
-// tests.c REMOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOVE LATER
-int	test_colors();
-int	show_philos(t_philo *philos, t_vars *vars);
-int	test_loop(t_philo *philos, t_vars *vars);
-void	sleep_test();
-void	test_monitors(t_monitor *monitors, t_vars *vars);
 
 #endif

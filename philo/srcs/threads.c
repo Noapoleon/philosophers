@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:52:58 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/17 19:41:21 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/19 03:47:21 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,31 +15,30 @@
 // Philosopher threads routine
 void	*philosophing(void *arg)
 {
-	t_philo			*philo;
-	t_vars			*vars;
+	t_philo	*philo;
+	t_vars	*vars;
 
 	philo = arg;
 	vars = philo->vars;
-	set_meal_time(philo);
 	if (philo->pos % 2)
-		usleep(200);
+		my_usleep(500);
 	while (1)
 	{
-		if (print_state(philo, vars, MSG_THK, NOT_EATING) != 0)
+		if (print_state(philo, vars, MSG_THK, get_time()) != 0)
 			return (NULL);
 		if (forking(philo, vars) != 0)
 			return (NULL);
 		if (eating(philo, vars) != 0)
 			return (NULL);
-		if (print_state(philo, vars, MSG_SLP, NOT_EATING) != 0)
+		if (print_state(philo, vars, MSG_SLP, get_time()) != 0)
 			return (NULL);
-		usleep(vars->time_sleep);
+		my_usleep(vars->time_sleep);
 	}
-	return (NULL); // could create other returns to handle errors
+	return (NULL);
 }
 
 // Monitor threads routine
-void	*monitoring(void *arg) // monitor routine
+void	*monitoring(void *arg)
 {
 	t_monitor	*monitor;
 	t_philo		*philo;
@@ -49,20 +48,13 @@ void	*monitoring(void *arg) // monitor routine
 	monitor = arg;
 	philo = monitor->philo;
 	vars = monitor->vars;
-	usleep(200);
-	if (philo->pos % 2)
-		usleep(200);
 	while (1)
 	{
-		// usleep can probably be implemented easily inside here, - 1ms
-		pthread_mutex_lock(&vars->ret_mutex);
-		if (vars->ret)
-			return (pthread_mutex_unlock(&vars->ret_mutex), NULL);
-		pthread_mutex_unlock(&vars->ret_mutex);
-		now = get_now_time();
+		now = get_time();
 		pthread_mutex_lock(&philo->last_mutex);
 		if ((now - philo->last) * 1000 >= vars->time_die)
-			set_death(vars, philo, now);
+			if (set_death(vars, philo, now) != 0)
+				return (pthread_mutex_unlock(&philo->last_mutex), NULL);
 		pthread_mutex_unlock(&philo->last_mutex);
 	}
 	return (NULL);
@@ -73,29 +65,33 @@ int	start_sim(t_philo *philos, t_monitor *monitors, t_vars *vars)
 {
 	int	i;
 
-	vars->start = get_now_time();
+	vars->start = get_time();
 	i = 0;
 	while (i < vars->num_philos)
+		if (launch_thread_duo(philos, monitors, vars, i++) != 0)
+			return (-1);
+	return (0);
+}
+
+int	launch_thread_duo(t_philo *philos, t_monitor *monitors, t_vars *vars, int i)
+{
+	philos[i].last = vars->start;
+	if (pthread_create(&philos[i].thread, NULL, &philosophing, &philos[i]) != 0)
 	{
-		if (pthread_create(&philos[i].thread, NULL, &philosophing,
-				&philos[i]) != 0)
-		{
-			pthread_mutex_lock(&vars->ret_mutex);
-			vars->ret = 1;
-			pthread_mutex_unlock(&vars->ret_mutex);
-			join_n_threads(philos, monitors, i, i - 1);
-			return (printf(PHILO_ERR PE_CREATE, i + 1), -1);
-		}
-		if (pthread_create(&monitors[i].thread, NULL, &monitoring,
-				&monitors[i]) != 0)
-		{
-			pthread_mutex_lock(&vars->ret_mutex);
-			vars->ret = 1;
-			pthread_mutex_unlock(&vars->ret_mutex);
-			join_n_threads(philos, monitors, i, i);
-			return (printf(PHILO_ERR PE_CREATE, i + 1), -1);
-		}
-		++i;
+		pthread_mutex_lock(&vars->ret_mutex);
+		vars->ret = 1;
+		pthread_mutex_unlock(&vars->ret_mutex);
+		join_n_threads(philos, monitors, i, i - 1);
+		return (printf(PHILO_ERR PE_CREATE, i + 1), -1);
+	}
+	if (pthread_create(&monitors[i].thread, NULL, &monitoring,
+			&monitors[i]) != 0)
+	{
+		pthread_mutex_lock(&vars->ret_mutex);
+		vars->ret = 1;
+		pthread_mutex_unlock(&vars->ret_mutex);
+		join_n_threads(philos, monitors, i, i);
+		return (printf(PHILO_ERR PE_CREATE, i + 1), -1);
 	}
 	return (0);
 }

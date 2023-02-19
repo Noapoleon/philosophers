@@ -4,15 +4,7 @@ TODO:
 	- minimum meals could be implemented with a decrementing counter and a
 	  seperate singular thread could loop that and check that the counter has
 	  not yet reached 0, if it did set ret to 1, need to add mutexes then
-	- monitors also need to exit when ret is 1, meaning there's a need for a
-	  monitor_join loop function
-	- monitor_terminate
-	- rename files when monitor is done to: philo.c -> main.c and create new
-	  file for all philo stuff (new philo.c), also rename state.c (bad name)
-	- right now im gonna do a dirty implementation of the monitors, it will
-	  really need cleaning later
-	- optimization in monitor routine where usleep for time left until death
-	  minus 10 ms
+	- remove mutex in initializer that's uselss now for philo
 
 QUESTIONS:
 	- [OK] the fuck is a mutex ?
@@ -38,5 +30,16 @@ DONE:
 	  printing and unlocking
 	- terminate function right now is wack, need to fix calls to free and
 	  destroy
+	- right now im gonna do a dirty implementation of the monitors, it will
+	  really need cleaning later
+	- rename files when monitor is done to: philo.c -> main.c and create new
+	  file for all philo stuff (new philo.c), also rename state.c (bad name)
+	- monitors also need to exit when ret is 1, meaning there's a need for a
+	  monitor_join loop function ==> DID A join_n_threads function instead
+
+WON'T DO:
+	- optimization in monitor routine where usleep for time left until death
+	  minus 10 ms
+	- monitor_terminate
 
 CHANGE:

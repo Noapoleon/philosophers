@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:58:59 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/17 19:07:33 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/19 02:17:58 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ int	main(int ac, char **av)
 			pthread_mutex_destroy(&vars.ret_mutex), -1);
 	if (start_sim(philos, monitors, &vars) == -1)
 		return (terminate_sim(philos, monitors, &vars), 5);
+	if (vars.num_meals_min)
+		wait_min_meals(&vars);
 	if (join_n_threads(philos, monitors, vars.num_philos, vars.num_philos)
 		!= 0)
 		return (terminate_sim(philos, monitors, &vars), 6);

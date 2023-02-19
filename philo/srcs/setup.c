@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:39:09 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/17 19:16:11 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/19 02:24:59 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,9 @@ int	vars_setup(t_vars *vars, int ac, char **av)
 	if (pthread_mutex_init(&vars->ret_mutex, NULL) != 0)
 		return (pthread_mutex_destroy(&vars->print_mutex),
 			printf(PHILO_ERR PE_RET_MUTEX), -1);
+	vars->start = 0;
 	vars->ret = 0;
+	vars->had_enough = 0;
 	return (0);
 }
 
@@ -44,7 +46,6 @@ int	get_inputs(t_vars *vars, int ac, char **av)
 	vars->time_die *= 1000;
 	vars->time_eat *= 1000;
 	vars->time_sleep *= 1000;
-	vars->start = 0;
 	set_print_width(vars);
 	return (0);
 }

@@ -8,6 +8,8 @@ INCDIR	=	incs
 RM	=	rm -rf
 
 # Colors
+COL_FRONT	=	\033[44;97;1m
+COL_RESET	=	\033[0m
 
 # Compiler Options
 CC		=	cc
@@ -22,7 +24,7 @@ SRCS	:=	philo.c \
 			threads.c \
 			threads2.c \
 			utils.c \
-			tests.c
+			utils2.c
 OBJS	:=	$(SRCS:.c=.o)
 SCRS	:=	$(addprefix $(SRCDIR)/, $(SRCS))
 OBJS	:=	$(addprefix $(OBJDIR)/, $(OBJS))
@@ -51,7 +53,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 -include $(OBJS:.o=.d)
 
 norm:
-	@echo "\033[44;97;1m                 \033[0m"
+	@echo "$(COL_FRONT)                 $(COL_RESET)"
 	@echo "\033[44;97;1m  SOURCES NORM:  \033[45;97;1m  \033[0m"
 	@echo "\033[44;97;1m                 \033[45;97;1m  \033[0m"
 	@echo " \033[45;97;1m                  \033[0m"

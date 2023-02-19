@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 16:59:21 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/16 23:51:30 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/18 17:13:42 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,4 +88,25 @@ void	test_monitors(t_monitor *monitors, t_vars *vars)
 		printf("philo -> %d\n", monitors[i].philo->pos);
 		++i;
 	}
+}
+
+void	helgrind_sleep_test(void)
+{
+	struct timeval	tv1;
+	struct timeval	tv2;
+
+	gettimeofday(&tv1, NULL);
+	usleep(800000);
+	gettimeofday(&tv2, NULL);
+
+	printf("delay in us -> %ld\n", (tv2.tv_sec * 1000000 + tv2.tv_usec) - (tv1.tv_sec * 1000000 + tv1.tv_usec));
+	printf("delay in ms -> %ld\n", (tv2.tv_sec * 1000 + tv2.tv_usec / 1000) - (tv1.tv_sec * 1000 + tv1.tv_usec / 1000));
+
+
+	gettimeofday(&tv1, NULL);
+	my_usleep(800000);
+	gettimeofday(&tv2, NULL);
+
+	printf("my delay in us -> %ld\n", (tv2.tv_sec * 1000000 + tv2.tv_usec) - (tv1.tv_sec * 1000000 + tv1.tv_usec));
+	printf("my delay in ms -> %ld\n", (tv2.tv_sec * 1000 + tv2.tv_usec / 1000) - (tv1.tv_sec * 1000 + tv1.tv_usec / 1000));
 }
