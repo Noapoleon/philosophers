@@ -22,7 +22,10 @@ DEBUG	=	-g3 -gdwarf-4
 
 # Files
 SRCS	:=	philo_bonus.c \
-			utils_bonus.c
+			utils_bonus.c \
+			setup_bonus.c \
+			sems_bonus.c \
+			tests.c
 OBJS	:=	$(SRCS:.c=.o)
 SCRS	:=	$(addprefix $(SRCDIR)/, $(SRCS))
 OBJS	:=	$(addprefix $(OBJDIR)/, $(OBJS))

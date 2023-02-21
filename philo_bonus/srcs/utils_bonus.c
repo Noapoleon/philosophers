@@ -6,27 +6,40 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/19 19:08:50 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/19 19:14:53 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/21 08:59:53 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void	util_cmd(void)
+// Parses string into integer, string must represent a positive non-zero integer
+// Formatting is very strict, only numbers are allowed, no whitespace and no
+// negatives values
+// Returns parsed int or -1 in case of error
+int	atoi_philo(char *str)
 {
-	pid_t	pid;
+	long	n;
+	int		i;
 
-	printf("Command from utils_bonus.c file\n");
-	pid = fork();
-	if (pid == -1)
+	if (!str)
+		return (-1);
+	i = 0;
+	n = 0;
+	while (str[i] && str[i] >= '0' && str[i] <= '9')
 	{
-		printf("samere fork a pas marche...\n");
-		exit(EXIT_FAILURE);
+		n = (n * 10) + (str[i] - '0');
+		if (n < INT_MIN || n > INT_MAX)
+			return (-1);
+		++i;
 	}
-	else if (pid == 0)
-	{
-		printf("Hi, from the child process~\n");
-		exit(EXIT_SUCCESS);
-	}
-	printf("My child's pid is %d\n", pid);
+	if (n == 0 || str[i] != '\0')
+		return (-1);
+	return (n);
+}
+
+void	phibo_terminate(t_vars *vars, int exit_mode)
+{
+	sem_close(vars->sync);
+	sem_close(vars->forks);
+	exit(exit_mode);
 }
