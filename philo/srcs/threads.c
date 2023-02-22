@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:52:58 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/22 11:55:07 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/22 12:29:48 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	*monitoring(void *arg)
 	vars = monitor->vars;
 	while (vars->sync_count != vars->num_philos)
 		;
-	while (philo->last == -1)
+	while (philo->start == -1)
 		;
 	while (1)
 	{

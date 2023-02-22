@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/16 00:16:29 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/22 11:50:58 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/22 12:24:02 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,21 +66,17 @@ void	ft_putstr_fd(char *s, int fd) // remove later
 // Mutex-protected print of philosophers actions with colors
 int	print_state(t_philo *philo, t_vars *vars, char *action, long time)
 {
-	pthread_mutex_lock(&vars->print_mutex);
 	pthread_mutex_lock(&vars->ret_mutex);
+	pthread_mutex_lock(&vars->print_mutex);
 	if (vars->ret)
-	{
-		pthread_mutex_unlock(&vars->ret_mutex);
-		pthread_mutex_unlock(&vars->print_mutex);
-		return (1);
-	}
+		return (pthread_mutex_unlock(&vars->ret_mutex), 1);
 	write(1, COL_TIM, 6);
 	ft_putnbr_fd((int)((time - philo->start) / 1000), 1);
 	write(1, COL_RST " ", 5);
 	ft_putnbr_fd(philo->pos, 1);
 	write(1, action, ft_strlen(action));
-	pthread_mutex_unlock(&vars->ret_mutex);
 	pthread_mutex_unlock(&vars->print_mutex);
+	pthread_mutex_unlock(&vars->ret_mutex);
 	return (0);
 }
 //int	print_state(t_philo *philo, t_vars *vars, char *action, long time)
@@ -105,22 +101,18 @@ int	print_state(t_philo *philo, t_vars *vars, char *action, long time)
 // messages
 int	set_death(t_vars *vars, t_philo *philo, long time)
 {
-	pthread_mutex_lock(&vars->print_mutex);
 	pthread_mutex_lock(&vars->ret_mutex);
+	pthread_mutex_lock(&vars->print_mutex);
 	if (vars->ret)
-	{
-		pthread_mutex_unlock(&vars->ret_mutex);
-		pthread_mutex_unlock(&vars->print_mutex);
-		return (1);
-	}
+		return (pthread_mutex_unlock(&vars->ret_mutex), 1);
 	vars->ret = 1;
 	write(1, COL_TIM, 6);
 	ft_putnbr_fd((int)((time - philo->start) / 1000), 1);
 	write(1, COL_RST " ", 5);
 	ft_putnbr_fd(philo->pos, 1);
 	write(1, MSG_DED, ft_strlen(MSG_DED));
-	pthread_mutex_unlock(&vars->ret_mutex);
 	pthread_mutex_unlock(&vars->print_mutex);
+	pthread_mutex_unlock(&vars->ret_mutex);
 	return (0);
 }
 //int	set_death(t_vars *vars, t_philo *philo, long time)

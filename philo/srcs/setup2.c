@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/16 18:52:49 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/22 10:54:10 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/22 12:29:41 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int	make_philos(t_philo **philos, t_vars *vars)
 		curr = &(*philos)[i];
 		curr->pos = i + 1;
 		curr->last = -1;
+		curr->start = -1;
 		curr->meals = 0;
 		curr->vars = vars;
 		curr->next = *philos + (i != vars->num_philos - 1) * (i + 1);
