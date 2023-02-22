@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:39:09 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/19 02:24:59 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/22 10:33:57 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,14 @@ int	vars_setup(t_vars *vars, int ac, char **av)
 	if (pthread_mutex_init(&vars->ret_mutex, NULL) != 0)
 		return (pthread_mutex_destroy(&vars->print_mutex),
 			printf(PHILO_ERR PE_RET_MUTEX), -1);
+	if (pthread_mutex_init(&vars->sync_mutex, NULL) != 0)
+		return (pthread_mutex_destroy(&vars->print_mutex),
+			pthread_mutex_destroy(&vars->ret_mutex),
+			printf(PHILO_ERR PE_SYNC_MUTEX), -1);
 	vars->start = 0;
 	vars->ret = 0;
 	vars->had_enough = 0;
+	vars->sync_count = 0;
 	return (0);
 }
 

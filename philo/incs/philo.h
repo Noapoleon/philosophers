@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:54:17 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/19 03:47:35 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/22 11:51:41 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 # define PE_N_MEALS			"number_of_times_each_philosopher_should_eat: "
 # define PE_RET_MUTEX		"Failed to initialize return mutex\n"
 # define PE_PRINT_MUTEX		"Failed to initialize print mutex\n"
+# define PE_SYNC_MUTEX		"Failed to initialize sync mutex\n"
 # define PE_ALLOC_PHILOS	"Failed to allocate philos array list\n"
 # define PE_FORK_MUTEX		"Failed to initialize fork mutex %d\n"
 # define PE_LAST_MUTEX		"Failed to initialize last mutex %d\n"
@@ -46,11 +47,11 @@
 
 # define COL_TIM	"\033[7;1m"
 # define COL_RST	"\033[0m"
-# define MSG_FRK	"\033[35;1mhas taken a fork\033[0m\n" // make light purple
-# define MSG_EAT	"\033[32;1mis eating\033[0m\n"
-# define MSG_THK	"\033[33;1mis thinking\033[0m\n"
-# define MSG_SLP	"\033[36;1mis sleeping\033[0m\n"
-# define MSG_DED	"\033[31;7;5;1mdied\033[0m\n"
+# define MSG_FRK	" \033[35;1mhas taken a fork\033[0m\n" // added spaces remove later
+# define MSG_EAT	" \033[32;1mis eating\033[0m\n"
+# define MSG_THK	" \033[33;1mis thinking\033[0m\n"
+# define MSG_SLP	" \033[36;1mis sleeping\033[0m\n"
+# define MSG_DED	" \033[31;7;5;1mdied\033[0m\n"
 # define EATING		1
 # define NOT_EATING	0
 
@@ -64,6 +65,7 @@ struct s_philo
 	pthread_mutex_t	fork;
 	pthread_mutex_t	last_mutex;
 	long			last;
+	long			start;
 	int				meals;
 	t_vars			*vars;
 	t_philo			*next;
@@ -88,6 +90,8 @@ struct s_vars
 	pthread_mutex_t	ret_mutex;
 	int				ret;
 	int				had_enough;
+	pthread_mutex_t sync_mutex; // probably can get rid of it if increment happens in main thread only but not sure that would work great
+	int				sync_count;
 };
 
 // utils.c

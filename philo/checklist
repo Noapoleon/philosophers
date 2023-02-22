@@ -43,3 +43,5 @@ WON'T DO:
 	- monitor_terminate
 
 CHANGE:
+	- get_time in microseconds instead of milli and do divisions / 1000 for print
+

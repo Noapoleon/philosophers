@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:52:58 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/19 03:47:21 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/22 11:55:07 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,13 @@ void	*philosophing(void *arg)
 
 	philo = arg;
 	vars = philo->vars;
+	pthread_mutex_lock(&vars->sync_mutex);
+	++vars->sync_count;
+	pthread_mutex_unlock(&vars->sync_mutex);
+	while (vars->sync_count != vars->num_philos)
+		;
+	philo->start = get_time();
+	philo->last = philo->start;
 	if (philo->pos % 2)
 		my_usleep(500);
 	while (1)
@@ -48,13 +55,21 @@ void	*monitoring(void *arg)
 	monitor = arg;
 	philo = monitor->philo;
 	vars = monitor->vars;
+	while (vars->sync_count != vars->num_philos)
+		;
+	while (philo->last == -1)
+		;
 	while (1)
 	{
 		now = get_time();
 		pthread_mutex_lock(&philo->last_mutex);
-		if ((now - philo->last) * 1000 >= vars->time_die)
+		if ((now - philo->last) >= vars->time_die) // lost precision because of get_time
+		{
+//			printf("num %d -> now - philo->last = %ld\n", philo->pos, now - philo->last);
+//			printf("time_die = %ld\n", vars->time_die);
 			if (set_death(vars, philo, now) != 0)
 				return (pthread_mutex_unlock(&philo->last_mutex), NULL);
+		}
 		pthread_mutex_unlock(&philo->last_mutex);
 	}
 	return (NULL);
@@ -64,18 +79,23 @@ void	*monitoring(void *arg)
 int	start_sim(t_philo *philos, t_monitor *monitors, t_vars *vars)
 {
 	int	i;
+	long	before;
+	long	after;
 
 	vars->start = get_time();
 	i = 0;
+	before = get_time();
 	while (i < vars->num_philos)
 		if (launch_thread_duo(philos, monitors, vars, i++) != 0)
 			return (-1);
+	after = get_time();
+	printf("delay -> %ld\n", after - before);
 	return (0);
 }
 
 int	launch_thread_duo(t_philo *philos, t_monitor *monitors, t_vars *vars, int i)
 {
-	philos[i].last = vars->start;
+	//philos[i].last = vars->start; // put back later maybe
 	if (pthread_create(&philos[i].thread, NULL, &philosophing, &philos[i]) != 0)
 	{
 		pthread_mutex_lock(&vars->ret_mutex);

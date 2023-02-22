@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 23:05:19 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/19 03:47:36 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/02/22 10:48:07 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ long	get_time(void)
 	long			now;
 
 	gettimeofday(&tv, NULL);
-	now = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+	now = tv.tv_sec * 1000000 + tv.tv_usec;
 	return (now);
 }
 
@@ -83,6 +83,7 @@ void	terminate_sim(t_philo *philos, t_monitor *monitors, t_vars *vars)
 	destroy_n_mutexes(philos, vars->num_philos);
 	pthread_mutex_destroy(&vars->print_mutex);
 	pthread_mutex_destroy(&vars->ret_mutex);
+	pthread_mutex_destroy(&vars->sync_mutex);
 	free(philos);
 	free(monitors);
 }
