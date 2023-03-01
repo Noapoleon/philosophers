@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:58:59 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 04:35:56 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/01 07:08:24 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int	main(int ac, char **av)
 	if (sim_start(&data) == -1)
 		return (destroy_n_mutexes(&data, data.rules.num_philos), 2);
 	// monitoring
+	monitoring(&data);
 	sim_stop(&data);
 	return (0);
 }

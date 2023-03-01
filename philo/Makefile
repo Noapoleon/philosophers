@@ -24,6 +24,7 @@ DEBUG	=	-g3 -gdwarf-4
 SRCS	:=	main.c \
 			setup.c \
 			threads.c \
+			threads2.c \
 			utils.c \
 			utils2.c
 OBJS	:=	$(SRCS:.c=.o)

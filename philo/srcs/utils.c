@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 23:05:19 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 05:35:53 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/01 06:49:22 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	destroy_n_mutexes(t_data *data, int n)
 
 	pthread_mutex_destroy(&data->print_mutex);
 	pthread_mutex_destroy(&data->ate_mutex);
-	pthread_mutex_destroy(&data->ret_mutex);
+	pthread_mutex_destroy(&data->exit_mutex);
 	pthread_mutex_destroy(&data->sync_mutex);
 	i = 0;
 	while (i < n)

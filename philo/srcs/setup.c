@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:39:09 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 05:11:14 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/01 06:49:22 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	sim_setup(t_data *data, int ac, char **av)
 		return (-1);
 	set_philos(data);
 	data->ate_meals = 0;
-	data->ret = 0;
+	data->exit = 0;
 	data->start = 0;
 	data->synced = 0; // might remove
 	return (0);
@@ -49,6 +49,9 @@ int	get_rules(t_rules *rules, int ac, char **av)
 		printf(PHILO_ERR PE_N_MEALS PE_FORVAL);
 	else
 		rules->num_meals = 0;
+	rules->time_die *= 1000;
+	rules->time_eat *= 1000;
+	rules->time_sleep *= 1000;
 	if (errors)
 		return (-1);
 	return (0);
@@ -65,11 +68,11 @@ int	make_mutexes(t_data *data)
 		return (-1);
 	if (pthread_mutex_init(&data->ate_mutex, NULL) != 0)
 		return (pthread_mutex_destroy(&data->print_mutex), -1);
-	if (pthread_mutex_init(&data->ret_mutex, NULL) != 0)
+	if (pthread_mutex_init(&data->exit_mutex, NULL) != 0)
 		return (pthread_mutex_destroy(&data->print_mutex),
 			pthread_mutex_destroy(&data->ate_mutex), -1);
 	if (pthread_mutex_init(&data->sync_mutex, NULL) != 0)
-		return (pthread_mutex_destroy(&data->ret_mutex),
+		return (pthread_mutex_destroy(&data->exit_mutex),
 			pthread_mutex_destroy(&data->print_mutex),
 			pthread_mutex_destroy(&data->ate_mutex), -1);
 	// 

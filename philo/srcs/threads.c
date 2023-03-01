@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:52:58 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 05:29:12 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/01 07:10:38 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,18 +22,23 @@ void	*philosophing(void *arg)
 	philo = arg;
 	data = philo->data; // not necessary
 	//rules = &data->rules; // not necessary
-
-	// wait for sync??? or not
-	pthread_mutex_lock(&data->sync_mutex);
-	++data->synced;
-	pthread_mutex_unlock(&data->sync_mutex);
-	while (!all_synced(data))
-		;
-	// set start to actual start
-	pthread_mutex_lock(philo->last_meal_mutex);
-	philo->last_meal = data->start;
-	pthread_mutex_unlock(philo->last_meal_mutex);
-	printf("Philosopher %d started at %ld!\n", philo->pos, philo_gettime()); // show time
+	if (sync_philo_thread(philo, data) == -1)
+		return (NULL);
+	if (philo->pos % 2)
+		philo_usleep(10000);
+	while (1)
+	{
+		if (get_exit(data)) // for monitor testing
+			break ;
+		//if (forking == -1)
+		//	break ;
+		//if (eating == -1)
+		//	break ;
+		//if (sleeping == -1)
+		//	break ;
+		//if (thinking == -1)
+		//	break ;
+	}
 	return (NULL);
 }
 
@@ -44,14 +49,22 @@ int	sim_start(t_data *data)
 	int		i;
 	t_philo	*curr;
 
+	// wait for threads and sleep a bit
 	i = 0;
 	while (i < data->rules.num_philos)
 	{
 		curr = &data->philos[i];
 		if (pthread_create(&curr->thread, NULL, &philosophing, curr) != 0)
-			return (set_ret(data), join_n_threads(data, i), -1);
+			return (printf(PHILO_ERR PE_THREAD_CREATE, i + 1),
+				set_exit(data), join_n_threads(data, i), -1);
 		++i;
 	}
+	sync_main_thread(data);
+	return (0);
+}
+
+void	sync_main_thread(t_data *data)
+{
 	while (1)
 	{
 		pthread_mutex_lock(&data->sync_mutex);
@@ -65,7 +78,45 @@ int	sim_start(t_data *data)
 	pthread_mutex_lock(&data->sync_mutex);
 	data->start = philo_gettime();
 	pthread_mutex_unlock(&data->sync_mutex);
+}
+
+int	sync_philo_thread(t_philo *philo, t_data *data)
+{
+	pthread_mutex_lock(&data->sync_mutex);
+	++data->synced;
+	pthread_mutex_unlock(&data->sync_mutex);
+	while (!all_synced(data))
+		if (get_exit(data))
+			return (-1);
+	pthread_mutex_lock(philo->last_meal_mutex);
+	philo->last_meal = data->start;
+	pthread_mutex_unlock(philo->last_meal_mutex);
 	return (0);
+}
+
+void	monitoring(t_data *data) // more tweaking needed
+{
+	t_rules	*rules;
+	int	i;
+
+	rules = &data->rules;
+	while (!all_synced(data))
+		if (get_exit(data))
+			return ;
+	philo_usleep(20000);
+	while (1)
+	{
+		i = 0;
+		while (i < rules->num_philos)
+		{
+			if (get_exit(data))
+				return ;
+			if (check_death(&data->philos[i]))
+				return (set_exit(data));
+			++i;
+		}
+		// check ate_enough here
+	}
 }
 
 //// Philosopher threads routine

@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:54:17 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 05:28:00 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/01 07:07:10 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,10 @@ struct s_data
 	pthread_mutex_t last_meal_mutexes[MAX_PHILOS];
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	ate_mutex;
-	pthread_mutex_t	ret_mutex;
+	pthread_mutex_t	exit_mutex;
 	pthread_mutex_t	sync_mutex; // no init
 	int				ate_meals;
-	int				ret;
+	int				exit;
 	long			start;
 	int				synced; // no init
 };
@@ -87,6 +87,11 @@ int		atoi_philo(char *str, long min, long max, long *dst);
 // threads.c
 void	*philosophing(void *arg);
 int		sim_start(t_data *data);
+void	sync_main_thread(t_data *data);
+int		sync_philo_thread(t_philo *philo, t_data *data);
+void	monitoring(t_data *data);
+// threads2.c
+int		check_death(t_philo *philo);
 
 
 // utils.c
@@ -95,9 +100,10 @@ void	join_n_threads(t_data *data, int n);
 void	sim_stop(t_data *data);
 long	philo_gettime();
 // utils2.c
-void	set_ret(t_data *data);
-int		get_ret(t_data *data);
+void	set_exit(t_data *data);
+int		get_exit(t_data *data);
 int		all_synced(t_data *data);
+void	philo_usleep(long time); // still testing it
 
 
 //long	get_time(void);

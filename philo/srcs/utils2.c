@@ -6,27 +6,27 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/19 01:37:54 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 05:19:54 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/01 06:49:22 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	set_ret(t_data *data)
+void	set_exit(t_data *data)
 {
-	pthread_mutex_lock(&data->ret_mutex);
-	data->ret = 1;
-	pthread_mutex_unlock(&data->ret_mutex);
+	pthread_mutex_lock(&data->exit_mutex);
+	data->exit = 1;
+	pthread_mutex_unlock(&data->exit_mutex);
 }
 
-int	get_ret(t_data *data)
+int	get_exit(t_data *data)
 {
-	int	ret;
+	int	exit;
 
-	pthread_mutex_lock(&data->ret_mutex);
-	ret = data->ret;
-	pthread_mutex_unlock(&data->ret_mutex);
-	return (ret);
+	pthread_mutex_lock(&data->exit_mutex);
+	exit = data->exit;
+	pthread_mutex_unlock(&data->exit_mutex);
+	return (exit);
 }
 
 int	all_synced(t_data *data)
@@ -36,6 +36,14 @@ int	all_synced(t_data *data)
 		return (pthread_mutex_unlock(&data->sync_mutex), 1);
 	pthread_mutex_unlock(&data->sync_mutex);
 	return (0);
+}
+
+void	philo_usleep(long time)
+{
+	const long start = philo_gettime();
+
+	while (philo_gettime() - start < time)
+		usleep(5);
 }
 
 //void	wait_min_meals(t_vars *vars)
