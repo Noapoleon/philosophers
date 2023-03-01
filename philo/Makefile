@@ -25,6 +25,7 @@ SRCS	:=	main.c \
 			setup.c \
 			threads.c \
 			threads2.c \
+			threads3.c \
 			utils.c \
 			utils2.c
 OBJS	:=	$(SRCS:.c=.o)

@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:54:17 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 07:07:10 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/01 21:57:22 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 # define USAGE2				"<time_to_eat> <time_to_sleep> "
 # define USAGE3				"[number_of_times_each_philosopher_should_eat]\n"
 
-# define PHILO_ERR			"\033[31;7;1m[PHILO ERROR]\033[0m "
+# define PHILO_ERR			"\e[31;7;1m[PHILO ERROR]\e[0m "
 # define PE_FORVAL			"bad format/value\n"
 # define PE_N_PHILO			"number_of_philosophers: "
 # define PE_T_DIE			"time_to_die: "
@@ -37,6 +37,15 @@
 # define PE_N_MEALS			"number_of_times_each_philosopher_should_eat: "
 # define PE_THREAD_CREATE	"Failed to create thread #%d\n"
 # define PE_THREAD_JOIN		"Failed to join thread #%d\n"
+
+# define FLD_TIM	"\e[7;1m%06ld\e[0m"
+# define FLD_POS	" %3d "
+# define FLD_FRK	"\e[35;1mhas taken a fork\e[0m\n"
+# define FLD_EAT	"\e[32;1mis eating\e[0m\n"
+# define FLD_SLP	"\e[34;1mis sleeping\e[0m\n"
+# define FLD_THK	"\e[33;1mis thinking\e[0m\n"
+# define FLD_DED	"\e[31;7;1mdied\e[0m\n"
+
 
 typedef struct s_rules	t_rules;
 typedef struct s_philo	t_philo;
@@ -70,7 +79,7 @@ struct s_data
 	pthread_mutex_t	ate_mutex;
 	pthread_mutex_t	exit_mutex;
 	pthread_mutex_t	sync_mutex; // no init
-	int				ate_meals;
+	long			ate_meals;
 	int				exit;
 	long			start;
 	int				synced; // no init
@@ -91,7 +100,15 @@ void	sync_main_thread(t_data *data);
 int		sync_philo_thread(t_philo *philo, t_data *data);
 void	monitoring(t_data *data);
 // threads2.c
+int		forking(t_philo *philo);
+int		eating(t_philo *philo, t_data *data);
+int		sleeping(t_philo *philo, t_data *data);
+//int		thinking(t_philo *philo, t_data *data);
+// threads3.c
 int		check_death(t_philo *philo);
+int		print_state(long time, t_philo *philo, const char *state);
+void	print_set_death(long time, t_philo *philo);
+long	set_meal_time(t_philo *philo);
 
 
 // utils.c

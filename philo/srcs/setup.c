@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:39:09 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 06:49:22 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/01 20:26:09 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,9 @@ int	get_rules(t_rules *rules, int ac, char **av)
 		printf(PHILO_ERR PE_T_EAT PE_FORVAL);
 	if (atoi_philo(av[4], MIN_TIME, INT_MAX, &rules->time_sleep) && ++errors)
 		printf(PHILO_ERR PE_T_SLEEP PE_FORVAL);
-	if (ac == 6 && atoi_philo(av[5], 0, INT_MAX, &rules->num_meals) && ++errors)
+	rules->num_meals = 0;
+	if (ac == 6 && atoi_philo(av[5], 1, INT_MAX, &rules->num_meals) && ++errors)
 		printf(PHILO_ERR PE_N_MEALS PE_FORVAL);
-	else
-		rules->num_meals = 0;
 	rules->time_die *= 1000;
 	rules->time_eat *= 1000;
 	rules->time_sleep *= 1000;
