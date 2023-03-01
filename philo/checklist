@@ -5,6 +5,7 @@ TODO:
 	  seperate singular thread could loop that and check that the counter has
 	  not yet reached 0, if it did set ret to 1, need to add mutexes then
 	- remove mutex in initializer that's uselss now for philo
+	- PRECISION TEST FOR CUSTOM SLEEP FUNCTION
 
 QUESTIONS:
 	- [OK] the fuck is a mutex ?

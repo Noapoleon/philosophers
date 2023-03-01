@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:54:17 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/02/22 11:51:41 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/01 05:28:00 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,110 +21,104 @@
 # include <limits.h>
 # include <stdlib.h>
 
-# define USAGE1	"Usage: %s <number_of_philosophers> <time_to_die> "
-# define USAGE2	"<time_to_eat> <time_to_sleep> "
-# define USAGE3	"[number_of_times_each_philosopher_should_eat]\n"
+# define MAX_PHILOS	200
+# define MIN_TIME	60
+
+# define USAGE1				"Usage: %s <number_of_philosophers> <time_to_die> "
+# define USAGE2				"<time_to_eat> <time_to_sleep> "
+# define USAGE3				"[number_of_times_each_philosopher_should_eat]\n"
 
 # define PHILO_ERR			"\033[31;7;1m[PHILO ERROR]\033[0m "
-# define PE_FORMAT			"bad format\n"
+# define PE_FORVAL			"bad format/value\n"
 # define PE_N_PHILO			"number_of_philosophers: "
 # define PE_T_DIE			"time_to_die: "
 # define PE_T_EAT			"time_to_eat: "
 # define PE_T_SLEEP			"time_to_sleep: "
 # define PE_N_MEALS			"number_of_times_each_philosopher_should_eat: "
-# define PE_RET_MUTEX		"Failed to initialize return mutex\n"
-# define PE_PRINT_MUTEX		"Failed to initialize print mutex\n"
-# define PE_SYNC_MUTEX		"Failed to initialize sync mutex\n"
-# define PE_ALLOC_PHILOS	"Failed to allocate philos array list\n"
-# define PE_FORK_MUTEX		"Failed to initialize fork mutex %d\n"
-# define PE_LAST_MUTEX		"Failed to initialize last mutex %d\n"
-# define PE_MEALS_MUTEX		"Failed to initialize meal mutex %d\n"
-# define PE_CREATE			"Failed to create thread #%d\n"
-# define PE_JOIN_PHILO		"Failed to join philosopher thread #%d\n"
-# define PE_JOIN_MONITOR	"Failed to join monitor thread #%d\n"
-# define SETUP_FAILED		0
-# define SETUP_DONE			1
+# define PE_THREAD_CREATE	"Failed to create thread #%d\n"
+# define PE_THREAD_JOIN		"Failed to join thread #%d\n"
 
-# define COL_TIM	"\033[7;1m"
-# define COL_RST	"\033[0m"
-# define MSG_FRK	" \033[35;1mhas taken a fork\033[0m\n" // added spaces remove later
-# define MSG_EAT	" \033[32;1mis eating\033[0m\n"
-# define MSG_THK	" \033[33;1mis thinking\033[0m\n"
-# define MSG_SLP	" \033[36;1mis sleeping\033[0m\n"
-# define MSG_DED	" \033[31;7;5;1mdied\033[0m\n"
-# define EATING		1
-# define NOT_EATING	0
-
-typedef struct s_vars		t_vars;
-typedef struct s_philo		t_philo;
-typedef struct s_monitor	t_monitor;
+typedef struct s_rules	t_rules;
+typedef struct s_philo	t_philo;
+typedef struct s_data	t_data;
+struct s_rules
+{
+	long	num_philos;
+	long	time_die;
+	long	time_eat;
+	long	time_sleep;
+	long	num_meals;
+};
 struct s_philo
 {
 	int				pos;
 	pthread_t		thread;
-	pthread_mutex_t	fork;
-	pthread_mutex_t	last_mutex;
-	long			last;
-	long			start;
+	t_data			*data;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	*last_meal_mutex;
+	long			last_meal; // init to start (after sync if sync is performed)
 	int				meals;
-	t_vars			*vars;
-	t_philo			*next;
 };
-struct	s_monitor
+struct s_data
 {
-	int			pos;
-	pthread_t	thread;
-	t_philo		*philo;
-	t_vars		*vars;
-};
-struct s_vars
-{
-	int				num_philos;
-	long			time_die;
-	long			time_eat;
-	long			time_sleep;
-	int				num_meals_min;
-	long			start;
-	int				print_width;
+	t_rules			rules;
+	t_philo			philos[MAX_PHILOS];
+	pthread_mutex_t	forks[MAX_PHILOS];
+	pthread_mutex_t last_meal_mutexes[MAX_PHILOS];
 	pthread_mutex_t	print_mutex;
+	pthread_mutex_t	ate_mutex;
 	pthread_mutex_t	ret_mutex;
+	pthread_mutex_t	sync_mutex; // no init
+	int				ate_meals;
 	int				ret;
-	int				had_enough;
-	pthread_mutex_t sync_mutex; // probably can get rid of it if increment happens in main thread only but not sure that would work great
-	int				sync_count;
+	long			start;
+	int				synced; // no init
 };
 
-// utils.c
-int		atoi_philo(char *str);
-void	destroy_n_mutexes(t_philo *philos, int count);
-long	get_time(void);
-void	my_usleep(long delay);
-void	terminate_sim(t_philo *philos, t_monitor *monitors, t_vars *vars);
-//utils2.c
-void	wait_min_meals(t_vars *vars);
+
 // setup.c
-int		vars_setup(t_vars *vars, int ac, char **av);
-int		get_inputs(t_vars *vars, int ac, char **av);
-int		print_errors(t_vars *vars);
-void	set_print_width(t_vars *vars);
-// setup2.c
-int		sim_setup(t_philo **philos, t_monitor **monitors, t_vars *vars);
-int		make_philos(t_philo **philos, t_vars *vars);
-int		make_philo_mutexes(t_philo *philo, int i);
-int		make_monitors(t_monitor **monitors, t_philo *philos, t_vars *vars);
+int		sim_setup(t_data *data, int ac, char **av);
+int		get_rules(t_rules *rules, int ac, char **av);
+int		make_mutexes(t_data *data);
+void	set_philos(t_data *data);
+int		atoi_philo(char *str, long min, long max, long *dst);
+
 // threads.c
 void	*philosophing(void *arg);
-void	*monitoring(void *arg);
-int		start_sim(t_philo *philos, t_monitor *monitors, t_vars *vars);
-int		launch_thread_duo(t_philo *philos, t_monitor *monitors, t_vars *vars,
-			int i);
-int		join_n_threads(t_philo *philos, t_monitor *monitors,
-			int num_philos, int num_monitors);
-// threads2.c
-long	set_meal_time(t_philo *philo);
-int		print_state(t_philo *philo, t_vars *vars, char *action, long time);
-int		set_death(t_vars *vars, t_philo *philo, long now);
-int		forking(t_philo	*philo, t_vars *vars);
-int		eating(t_philo	*philo, t_vars *vars);
+int		sim_start(t_data *data);
+
+
+// utils.c
+void	destroy_n_mutexes(t_data *data, int n);
+void	join_n_threads(t_data *data, int n);
+void	sim_stop(t_data *data);
+long	philo_gettime();
+// utils2.c
+void	set_ret(t_data *data);
+int		get_ret(t_data *data);
+int		all_synced(t_data *data);
+
+
+//long	get_time(void);
+//void	my_usleep(long delay);
+//void	terminate_sim(t_philo *philos, t_monitor *monitors, t_vars *vars);
+////utils2.c
+//void	wait_min_meals(t_vars *vars);
+//
+//// threads.c
+//void	*philosophing(void *arg);
+//void	*monitoring(void *arg);
+//int		start_sim(t_philo *philos, t_monitor *monitors, t_vars *vars);
+//int		launch_thread_duo(t_philo *philos, t_monitor *monitors, t_vars *vars,
+//			int i);
+//int		join_n_threads(t_philo *philos, t_monitor *monitors,
+//			int num_philos, int num_monitors);
+//// threads2.c
+//long	set_meal_time(t_philo *philo);
+//int		print_state(t_philo *philo, t_vars *vars, char *action, long time);
+//int		set_death(t_vars *vars, t_philo *philo, long now);
+//int		forking(t_philo	*philo, t_vars *vars);
+//int		eating(t_philo	*philo, t_vars *vars);
 
 #endif

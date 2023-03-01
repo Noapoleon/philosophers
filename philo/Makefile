@@ -21,11 +21,9 @@ CINCS	=	-I./$(INCDIR)
 DEBUG	=	-g3 -gdwarf-4
 
 # Files
-SRCS	:=	philo.c \
+SRCS	:=	main.c \
 			setup.c \
-			setup2.c \
 			threads.c \
-			threads2.c \
 			utils.c \
 			utils2.c
 OBJS	:=	$(SRCS:.c=.o)
