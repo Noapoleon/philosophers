@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:54:17 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 21:57:22 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/01 22:27:26 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@
 # define FLD_THK	"\e[33;1mis thinking\e[0m\n"
 # define FLD_DED	"\e[31;7;1mdied\e[0m\n"
 
-
 typedef struct s_rules	t_rules;
 typedef struct s_philo	t_philo;
 typedef struct s_data	t_data;
@@ -66,7 +65,7 @@ struct s_philo
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*last_meal_mutex;
-	long			last_meal; // init to start (after sync if sync is performed)
+	long			last_meal;
 	int				meals;
 };
 struct s_data
@@ -74,17 +73,16 @@ struct s_data
 	t_rules			rules;
 	t_philo			philos[MAX_PHILOS];
 	pthread_mutex_t	forks[MAX_PHILOS];
-	pthread_mutex_t last_meal_mutexes[MAX_PHILOS];
+	pthread_mutex_t	last_meal_mutexes[MAX_PHILOS];
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	ate_mutex;
 	pthread_mutex_t	exit_mutex;
-	pthread_mutex_t	sync_mutex; // no init
+	pthread_mutex_t	sync_mutex;
 	long			ate_meals;
 	int				exit;
 	long			start;
-	int				synced; // no init
+	int				synced;
 };
-
 
 // setup.c
 int		sim_setup(t_data *data, int ac, char **av);
@@ -103,45 +101,21 @@ void	monitoring(t_data *data);
 int		forking(t_philo *philo);
 int		eating(t_philo *philo, t_data *data);
 int		sleeping(t_philo *philo, t_data *data);
-//int		thinking(t_philo *philo, t_data *data);
 // threads3.c
 int		check_death(t_philo *philo);
 int		print_state(long time, t_philo *philo, const char *state);
 void	print_set_death(long time, t_philo *philo);
 long	set_meal_time(t_philo *philo);
 
-
 // utils.c
 void	destroy_n_mutexes(t_data *data, int n);
 void	join_n_threads(t_data *data, int n);
 void	sim_stop(t_data *data);
-long	philo_gettime();
+long	philo_gettime(void);
 // utils2.c
 void	set_exit(t_data *data);
 int		get_exit(t_data *data);
 int		all_synced(t_data *data);
-void	philo_usleep(long time); // still testing it
-
-
-//long	get_time(void);
-//void	my_usleep(long delay);
-//void	terminate_sim(t_philo *philos, t_monitor *monitors, t_vars *vars);
-////utils2.c
-//void	wait_min_meals(t_vars *vars);
-//
-//// threads.c
-//void	*philosophing(void *arg);
-//void	*monitoring(void *arg);
-//int		start_sim(t_philo *philos, t_monitor *monitors, t_vars *vars);
-//int		launch_thread_duo(t_philo *philos, t_monitor *monitors, t_vars *vars,
-//			int i);
-//int		join_n_threads(t_philo *philos, t_monitor *monitors,
-//			int num_philos, int num_monitors);
-//// threads2.c
-//long	set_meal_time(t_philo *philo);
-//int		print_state(t_philo *philo, t_vars *vars, char *action, long time);
-//int		set_death(t_vars *vars, t_philo *philo, long now);
-//int		forking(t_philo	*philo, t_vars *vars);
-//int		eating(t_philo	*philo, t_vars *vars);
+void	philo_usleep(long time);
 
 #endif

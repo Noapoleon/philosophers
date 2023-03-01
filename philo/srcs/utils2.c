@@ -6,12 +6,13 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/19 01:37:54 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 21:02:49 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/01 22:28:28 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+// Locks mutex and sets exit attribute to 1
 void	set_exit(t_data *data)
 {
 	pthread_mutex_lock(&data->exit_mutex);
@@ -19,6 +20,7 @@ void	set_exit(t_data *data)
 	pthread_mutex_unlock(&data->exit_mutex);
 }
 
+// Gets the exit attribute from data while locking mutexes
 int	get_exit(t_data *data)
 {
 	int	exit;
@@ -29,6 +31,8 @@ int	get_exit(t_data *data)
 	return (exit);
 }
 
+// Checks if all threads are started
+// Returns 1 if all are there, 0 otherwise
 int	all_synced(t_data *data)
 {
 	pthread_mutex_lock(&data->sync_mutex);
@@ -38,23 +42,11 @@ int	all_synced(t_data *data)
 	return (0);
 }
 
+// Sleeps in small intervals for better precision
 void	philo_usleep(long time)
 {
-	const long start = philo_gettime();
+	const long	start = philo_gettime();
 
 	while (philo_gettime() - start < time)
 		usleep(5);
 }
-
-//void	wait_min_meals(t_vars *vars)
-//{
-//	while (1)
-//	{
-//		pthread_mutex_lock(&vars->ret_mutex);
-//		if (vars->ret)
-//			return ((void)pthread_mutex_unlock(&vars->ret_mutex));
-//		if (vars->had_enough == vars->num_philos)
-//			vars->ret = 1;
-//		pthread_mutex_unlock(&vars->ret_mutex);
-//	}
-//}

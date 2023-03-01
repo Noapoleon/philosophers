@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:52:58 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 21:54:25 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/01 22:29:16 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	*philosophing(void *arg)
 	data = philo->data;
 	if (sync_philo_thread(philo, data) == -1)
 		return (NULL);
-	if (philo->pos % 2 == 0) // changed that to == 0 not sure what that changes
+	if (philo->pos % 2 == 0)
 		philo_usleep(10000);
 	while (1)
 	{
@@ -32,7 +32,7 @@ void	*philosophing(void *arg)
 			break ;
 		if (sleeping(philo, data) == -1)
 			break ;
-		if (print_state(philo_gettime(), philo, FLD_THK) == -1) // i think doing this like this will allow messages to be printed after the death of a philo
+		if (print_state(philo_gettime(), philo, FLD_THK) == -1)
 			break ;
 	}
 	return (NULL);
@@ -58,6 +58,7 @@ int	sim_start(t_data *data)
 	return (0);
 }
 
+// Waits for all philosphers to be started before setting the start time
 void	sync_main_thread(t_data *data)
 {
 	while (1)
@@ -75,6 +76,8 @@ void	sync_main_thread(t_data *data)
 	pthread_mutex_unlock(&data->sync_mutex);
 }
 
+// Waits for all philosophers to be started and for the start time to be set for
+// the philosopher routine
 int	sync_philo_thread(t_philo *philo, t_data *data)
 {
 	pthread_mutex_lock(&data->sync_mutex);
@@ -89,10 +92,13 @@ int	sync_philo_thread(t_philo *philo, t_data *data)
 	return (0);
 }
 
+// Checks death for all philosophers in a loop
+// Also checks if all philosophers ate the minimum number of meals
+// Sets exit to 1 and prints message if one of these conditions is met
 void	monitoring(t_data *data)
 {
 	t_rules	*rules;
-	int	i;
+	int		i;
 
 	rules = &data->rules;
 	philo_usleep(20000);
