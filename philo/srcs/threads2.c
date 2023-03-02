@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 18:34:57 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/02 01:58:03 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/02 02:08:27 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,15 +35,15 @@ int	eating(t_philo *philo, t_data *data)
 	if (print_state(set_meal_time(philo), philo, FLD_EAT) == -1)
 		return (pthread_mutex_unlock(philo->left_fork),
 			pthread_mutex_unlock(philo->right_fork), -1);
+	philo_usleep(data->rules.time_eat);
+	pthread_mutex_unlock(philo->left_fork);
+	pthread_mutex_unlock(philo->right_fork);
 	if (++philo->meals == data->rules.num_meals)
 	{
 		pthread_mutex_lock(&data->ate_mutex);
 		++data->ate_meals;
 		pthread_mutex_unlock(&data->ate_mutex);
 	}
-	philo_usleep(data->rules.time_eat);
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
 	return (0);
 }
 
