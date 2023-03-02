@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 11:52:58 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 22:29:16 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/02 02:05:55 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,8 @@ void	monitoring(t_data *data)
 		}
 		pthread_mutex_lock(&data->ate_mutex);
 		if (rules->num_meals && data->ate_meals == rules->num_philos)
-			return (pthread_mutex_unlock(&data->ate_mutex), set_exit(data));
+			return (set_exit(data),
+				(void)pthread_mutex_unlock(&data->ate_mutex));
 		pthread_mutex_unlock(&data->ate_mutex);
 	}
 }
