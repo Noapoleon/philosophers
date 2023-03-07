@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/19 19:06:44 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/02 04:01:16 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/07 04:39:15 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@
 # define PE_T_EAT			"time_to_eat: "
 # define PE_T_SLEEP			"time_to_sleep: "
 # define PE_N_MEALS			"number_of_times_each_philosopher_should_eat: "
-//# define PE_THREAD_CREATE	"Failed to create thread #%d\n" // remoooooooooooooove
-//# define PE_THREAD_JOIN		"Failed to join thread #%d\n"
+# define PE_SEMS			"Failed to create all semaphores\n"
+# define PE_THREAD_CREATE	"Failed to create monitor thread #%d\n"
 
 # define FLD_TIM	"\e[7;1m%06ld\e[0m"
 # define FLD_POS	" %3d "
@@ -50,6 +50,8 @@
 # define FLD_DED	"\e[31;7;1mdied\e[0m\n"
 
 typedef struct s_rules	t_rules;
+typedef struct s_philo	t_philo;
+typedef struct s_data	t_data;
 struct s_rules
 {
 	long	num_philos;
@@ -57,31 +59,48 @@ struct s_rules
 	long	time_eat;
 	long	time_sleep;
 	long	num_meals;
-	sem_t	*sync;
-	sem_t	*forks;
 };
-//typedef struct s_philo	t_philo;
-//struct s_philo
-//{
-//
-//};
+struct s_philo
+{
+	int		pos;
+	long	start;
+	long	last;
+	int		meals;
+};
+struct s_data
+{
+	t_rules	rules;
+	sem_t	*forks_sem;
+	sem_t	*sync_sem;
+	sem_t	*print_sem;
+	sem_t	*ate_sem;
+	sem_t	*exit_sem;
+	pid_t	pids[MAX_PHILOS];
+	t_philo	philo;
+	int		ate_meals;
+};
 
-// sems_bonus.c
-//void	philosophing(t_vars *vars, int pos);
+// sim_bonus.c
+int		sim_start(t_data *data);
+void	philosophing(t_philo *philo, t_data *data);
+//void	monitoring(
+
+// states_bonus.c
+void	forking(t_philo *philo, t_data *data);
+void	eating(t_philo *philo, t_data *data);
+void	sleeping(t_philo *philo, t_data *data);
+void	print_state(long time, t_philo *philo, char *state, t_data *data);
 
 // utils_bonus.c
-//void	phibo_terminate(t_vars *vars, int exit_mode);
+int		atoi_philo(char *str, long min, long max, long *dst);
+void	destroy_sems(t_data *data);
+long	philo_gettime(void);
+void	kill_n_children(t_data *data, int n);
+void	philo_usleep(long time);
 
 // setup_bonus.c
-int		sim_setup(t_rules *rules, int ac, char **av);
+int		sim_setup(t_data *data, int ac, char **av);
 int		get_rules(t_rules *rules, int ac, char **av);
-int	atoi_philo(char *str, long min, long max, long *dst);
-//int		get_inputs(t_vars *vars, int ac, char **av);
-//int		print_errors(t_vars *vars);
-//void	set_print_width(t_vars *vars);
-
-// tests.c // REMOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOVE LATER
-//void	test_cmd(void);
-//void	test_inputs(t_vars *vars);
+int		make_sems(t_data *data);
 
 #endif
