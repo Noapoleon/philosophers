@@ -6,36 +6,37 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 03:59:20 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/07 04:40:36 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/12 08:32:59 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void	forking(t_philo *philo, t_data *data)
+void	forking(t_philo *philo, t_data *data) // CHANGE THIS NOW otherwise death will be delayed in some situations
 {
+	sem_wait(data->forking_sem); // wont prevent 4 310 200 100 but SHOULD prevent 5 800 200 200 death
 	sem_wait(data->forks_sem);
+	check_death(philo_gettime(), philo, data);
 	print_state(philo_gettime(), philo, FLD_FRK, data);
 	sem_wait(data->forks_sem);
+	check_death(philo_gettime(), philo, data);
 	print_state(philo_gettime(), philo, FLD_FRK, data);
+	sem_post(data->forking_sem);
 }
 
 void	eating(t_philo *philo, t_data *data)
 {
-	//sem_wait(data->last_meal_sem); // for monitoring, name for each semaphore will have to be custom like /last_sem019 no need for malloc tho just make a custom function with a static string ("/last_sem000") // FUCK THAT MAKES A LOT OF SEMAPHORES TO UNLINK, eeeh whatever i can do it in main everytime i start the program or after or something
 	print_state((philo->last = philo_gettime()), philo, FLD_EAT, data);
-	//sem_post(data->last_meal_sem);
-	philo_usleep(data->rules.time_eat);
+	philo_usleep(data->rules.time_eat, philo, data);
 	sem_post(data->forks_sem);
 	sem_post(data->forks_sem);
-	if (++philo->meals == data->rules.num_meals)
-		sem_post(data->ate_sem);
+	++philo->meals;
 }
 
 void	sleeping(t_philo *philo, t_data *data)
 {
 	print_state(philo_gettime(), philo, FLD_SLP, data);
-	philo_usleep(data->rules.time_sleep);
+	philo_usleep(data->rules.time_sleep, philo, data);
 }
 
 void	print_state(long time, t_philo *philo, char *state, t_data *data)
@@ -44,4 +45,25 @@ void	print_state(long time, t_philo *philo, char *state, t_data *data)
 	printf(FLD_TIM FLD_POS "%s", (time - philo->start) / 1000, philo->pos,
 		state);
 	sem_post(data->print_sem);
+}
+
+void	print_death(long time, t_philo *philo, t_data *data)
+{
+	sem_wait(data->print_sem);
+	printf(FLD_TIM FLD_POS FLD_DED, (time - philo->start) / 1000, philo->pos);
+	//sem_post(data->print_sem); // so that it doesn't unlock the semaphore
+}
+
+void	check_death(long time, t_philo *philo, t_data *data)
+{
+	if (time - philo->last > data->rules.time_die)
+	{
+		//print_state(time, philo, FLD_DED, data);
+		print_death(time, philo, data);
+		sem_close(data->forks_sem);
+		sem_close(data->sync_sem);
+		sem_close(data->print_sem);
+		sem_close(data->forking_sem);
+		exit(PHILO_DED);
+	}
 }

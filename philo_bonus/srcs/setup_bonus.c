@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 20:50:45 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/07 04:11:44 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/12 08:31:20 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	sim_setup(t_data *data, int ac, char **av)
 		return (-1);
 	if (make_sems(data) == -1)
 		return (printf(PHILO_ERR PE_SEMS), -1);
-	data->ate_meals = 0;
+	//data->ate_meals = 0;
 	data->philo.meals = 0;
 	return (0);
 }
@@ -61,8 +61,9 @@ int	make_sems(t_data *data) // closing stuff that doesn't exist, check if that's
 	sem_unlink("/forks_sem");
 	sem_unlink("/sync_sem");
 	sem_unlink("/print_sem");
-	sem_unlink("/ate_sem");
-	sem_unlink("/exit_sem");
+	sem_unlink("/forking_sem");
+	//sem_unlink("/ate_sem");
+	//sem_unlink("/exit_sem");
 	data->forks_sem = sem_open("/forks_sem", O_CREAT, 0644,
 		data->rules.num_philos);
 	if (data->forks_sem == SEM_FAILED)
@@ -73,11 +74,14 @@ int	make_sems(t_data *data) // closing stuff that doesn't exist, check if that's
 	data->print_sem = sem_open("/print_sem", O_CREAT, 0644, 1);
 	if (data->print_sem == SEM_FAILED)
 		return (destroy_sems(data), -1);
-	data->ate_sem = sem_open("/ate_sem", O_CREAT, 0644, 1);
-	if (data->ate_sem == SEM_FAILED)
+	data->forking_sem = sem_open("/forking_sem", O_CREAT, 0644, 1);
+	if (data->forking_sem == SEM_FAILED)
 		return (destroy_sems(data), -1);
-	data->exit_sem = sem_open("/exit_sem", O_CREAT, 0644, 0);
-	if (data->exit_sem == SEM_FAILED)
-		return (destroy_sems(data), -1);
+	//data->ate_sem = sem_open("/ate_sem", O_CREAT, 0644, 1);
+	//if (data->ate_sem == SEM_FAILED)
+	//	return (destroy_sems(data), -1);
+	//data->exit_sem = sem_open("/exit_sem", O_CREAT, 0644, 0);
+	//if (data->exit_sem == SEM_FAILED)
+	//	return (destroy_sems(data), -1);
 	return (0);
 }
