@@ -7,5 +7,6 @@ THINK ABOUT:
 	- simulation termination should not just exit the philos but instead close
 	  the links so the semaphores, so maybe i need an exit variable, WAIT maybe
 	  i don't need that actually if i just kill the process and unlink in main
+	- 
 
 DONE:

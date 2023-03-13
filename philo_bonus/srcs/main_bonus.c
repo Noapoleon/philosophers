@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/19 19:07:38 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/08 21:04:57 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/13 05:17:29 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,16 @@
 int	main(int ac, char **av)
 {
 	t_data		data;
-	//pthread_t	meals_thread;
 
 	if (sim_setup(&data, ac, av) == -1)
 		return (1);
+	if (start_meals_monitor(&data) == -1)
+		return (close_sems(&data), unlink_sems(), free(data.pids), 2);
 	if (sim_start(&data) == -1)
-		return (destroy_sems(&data), 2);
-	//if (data->rules.num_meals)
-	//	if (pthread_create(&meals_thread, NULL, &meals_monitoring, &data) != 0)
-	//		return (3);
+		return (close_sems(&data), unlink_sems(), free(data.pids), 3);
 	sim_wait_end(&data);
+	close_sems(&data);
+	unlink_sems();
+	free(data.pids);
 	return (0);
 }

@@ -6,12 +6,11 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/19 19:08:50 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/12 08:30:45 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/13 05:14:53 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
-
 
 // Parses string into integer and stores it in dst
 // Formatting is very strict, only numbers are allowed, no whitespace and no
@@ -37,21 +36,39 @@ int	atoi_philo(char *str, long min, long max, long *dst)
 	return ((*dst = n), 0);
 }
 
-// Closes and unlinks all semaphores
-void	destroy_sems(t_data *data)
+// Closes sems :o
+void	close_sems(t_data *data)
 {
 	sem_close(data->forks_sem);
 	sem_close(data->sync_sem);
 	sem_close(data->print_sem);
 	sem_close(data->forking_sem);
-	//sem_close(data->ate_sem);
-	//sem_close(data->exit_sem);
+	sem_close(data->ate_sem);
+}
+
+// Closes and unlinks all semaphores
+void	unlink_sems(void)
+{
+	static char	sem_name[13] = LAST_SEM_DEFAULT;
+	int			i;
+	int			j;
+
 	sem_unlink("/forks_sem");
 	sem_unlink("/sync_sem");
 	sem_unlink("/print_sem");
 	sem_unlink("/forking_sem");
-	//sem_unlink("/ate_sem");
-	//sem_unlink("/exit_sem");
+	sem_unlink("/ate_sem");
+	i = 0;
+	while (i++ < MAX_PHILOS)
+	{
+		j = i;
+		sem_name[11] = j % 10 + '0';
+		j /= 10;
+		sem_name[10] = j % 10 + '0';
+		j /= 10;
+		sem_name[9] = j % 10 + '0';
+		sem_unlink(sem_name);
+	}
 }
 
 // Returns current time in microseconds
@@ -63,6 +80,7 @@ long	philo_gettime(void)
 	return (tv.tv_sec * 1000000 + tv.tv_usec);
 }
 
+// Kills all philosophers children processes
 void	kill_n_children(t_data *data, int n)
 {
 	int	i;
@@ -73,23 +91,5 @@ void	kill_n_children(t_data *data, int n)
 		if (data->pids[i] != 0 && data->pids[i] != -1)
 			kill(data->pids[i], SIGKILL);
 		++i;
-	}
-}
-
-// Sleeps in small intervals for better precision
-void	philo_usleep(long time, t_philo *philo, t_data *data)
-{
-	const long	start = philo_gettime();
-	long		now;
-
-	(void)philo;
-	(void)data;
-	while (1)
-	{
-		usleep(50);
-		now = philo_gettime();
-		check_death(now, philo, data);
-		if (now - start >= time)
-			return ;
 	}
 }

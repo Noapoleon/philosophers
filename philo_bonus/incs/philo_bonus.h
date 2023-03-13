@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/19 19:06:44 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/12 08:29:53 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/13 05:18:13 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,11 @@
 # include <stdlib.h>
 # include <semaphore.h>
 
-# define MAX_PHILOS	200
-# define MIN_TIME	60
+# define MAX_PHILOS			200
+# define MIN_TIME			60
+# define PHILO_DEATH		1
+# define PHILO_EXIT_FAILURE	255
+# define LAST_SEM_DEFAULT	"/last_sem000\0"
 
 # define USAGE1				"Usage: %s <number_of_philosophers> <time_to_die> "
 # define USAGE2				"<time_to_eat> <time_to_sleep> "
@@ -49,9 +52,6 @@
 # define FLD_THK	"\e[33;1mis thinking\e[0m\n"
 # define FLD_DED	"\e[31;7;1mdied\e[0m\n"
 
-# define PHILO_DED	1
-# define PHILO_ATE	0
-
 typedef struct s_rules	t_rules;
 typedef struct s_philo	t_philo;
 typedef struct s_data	t_data;
@@ -69,6 +69,7 @@ struct s_philo
 	long	start;
 	long	last;
 	int		meals;
+	sem_t	*last_sem;
 };
 struct s_data
 {
@@ -77,34 +78,44 @@ struct s_data
 	sem_t	*sync_sem;
 	sem_t	*print_sem;
 	sem_t	*forking_sem;
-//	sem_t	*ate_sem;
-//	sem_t	*exit_sem;
-	pid_t	pids[MAX_PHILOS];
+	sem_t	*ate_sem;
+	pid_t	*pids;
 	t_philo	philo;
 };
-
-// sim_bonus.c
-int		sim_start(t_data *data);
-void	philosophing(t_philo *philo, t_data *data);
-void	sim_wait_end(t_data *data);
-void	check_death(long time, t_philo *philo, t_data *data);
-
-// states_bonus.c
-void	forking(t_philo *philo, t_data *data);
-void	eating(t_philo *philo, t_data *data);
-void	sleeping(t_philo *philo, t_data *data);
-void	print_state(long time, t_philo *philo, char *state, t_data *data);
-
-// utils_bonus.c
-int		atoi_philo(char *str, long min, long max, long *dst);
-void	destroy_sems(t_data *data);
-long	philo_gettime(void);
-void	kill_n_children(t_data *data, int n);
-void	philo_usleep(long time, t_philo *philo, t_data *data);
 
 // setup_bonus.c
 int		sim_setup(t_data *data, int ac, char **av);
 int		get_rules(t_rules *rules, int ac, char **av);
 int		make_sems(t_data *data);
+
+// sim_bonus.c
+int		sim_start(t_data *data);
+void	philosophing(t_philo *philo, t_data *data);
+void	sim_wait_end(t_data *data);
+
+// monitoring_bonus.c
+void	start_monitoring(t_philo *philo, t_data *data);
+void	*monitoring(void *arg);
+int		start_meals_monitor(t_data *data);
+void	*meals_monitoring(void *arg);
+
+// actions_bonus.c
+void	forking(t_philo *philo, t_data *data);
+void	eating(t_philo *philo, t_data *data);
+void	sleeping(t_philo *philo, t_data *data);
+void	check_death(long time, t_philo *philo, t_data *data);
+void	philo_usleep(long time);
+
+// states_bonus.c
+void	print_state(long time, t_philo *philo, char *state, t_data *data);
+void	print_death(long time, t_philo *philo, t_data *data);
+void	check_death(long time, t_philo *philo, t_data *data);
+
+// utils_bonus.c
+int		atoi_philo(char *str, long min, long max, long *dst);
+void	close_sems(t_data *data);
+void	unlink_sems(void);
+long	philo_gettime(void);
+void	kill_n_children(t_data *data, int n);
 
 #endif
