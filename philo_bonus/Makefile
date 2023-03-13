@@ -31,7 +31,6 @@ SRCS	:=	main_bonus.c \
 OBJS	:=	$(SRCS:.c=.o)
 SCRS	:=	$(addprefix $(SRCDIR)/, $(SRCS))
 OBJS	:=	$(addprefix $(OBJDIR)/, $(OBJS))
-INCS	:= 
 
 all: $(NAME)
 

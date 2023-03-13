@@ -6,7 +6,7 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/19 19:06:44 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/13 05:18:13 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/13 14:08:59 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <limits.h>
 # include <stdlib.h>
 # include <semaphore.h>
+# include <signal.h>
 
 # define MAX_PHILOS			200
 # define MIN_TIME			60
