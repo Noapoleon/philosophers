@@ -9,7 +9,7 @@ RM	=	rm -rf
 
 # Colors
 COL_FRONT	=	\033[44;37;1m
-COL_BACK	=	\033[48;2;47;55;173m
+COL_BACK	=	\033[7m
 COL_ERR		=	\033[41;37;5;1m
 COL_OK		=	\033[32;1m
 COL_RESET	=	\033[0m
