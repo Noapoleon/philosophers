@@ -15,10 +15,10 @@ COL_OK		=	\033[32;1m
 COL_RESET	=	\033[0m
 
 # Compiler Options
-CC		=	cc
+#CC		=	cc
+CC		=	cc -fsanitize=address
 CFLAGS	=	-Wall -Wextra -Werror -MD -pthread
 CINCS	=	-I./$(INCDIR)
-DEBUG	=	-g3 -gdwarf-4
 
 # Files
 SRCS	:=	main_bonus.c \
@@ -48,10 +48,10 @@ fclean: clean
 
 re: fclean all
 
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
-
-$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
+	@if [ ! -d $(dir $@) ]; then \
+		mkdir -p $(dir $@); \
+	fi
 	$(CC) $(DEBUG) $(CFLAGS) $(CINCS) -c $< -o $@
 
 -include $(OBJS:.o=.d)

@@ -6,13 +6,13 @@
 /*   By: nlegrand <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:58:59 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/01 19:43:42 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/07/13 15:08:53 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-// Unimportant function :]
+// Function :]
 int	main(int ac, char **av)
 {
 	t_data	data;

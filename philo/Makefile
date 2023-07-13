@@ -15,8 +15,8 @@ COL_OK		=	\033[32;1m
 COL_RESET	=	\033[0m
 
 # Compiler Options
-CC		=	cc
-CC		=	-g3 -gdwarf-4
+#CC		=	cc
+CC		=	cc -fsanitize=address
 CFLAGS	=	-Wall -Wextra -Werror -MD -pthread
 CINCS	=	-I./$(INCDIR)
 
@@ -35,7 +35,7 @@ OBJS	:=	$(addprefix $(OBJDIR)/, $(OBJS))
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(DEBUG) $(CFLAGS) $(OBJS) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 clean:
 	$(RM) $(OBJDIR)
@@ -46,10 +46,10 @@ fclean: clean
 re: fclean all
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	@if [ ! -d $(dir $@)]; then \
+	@if [ ! -d $(dir $@) ]; then \
 		mkdir -p $(dir $@); \
 	fi
-	$(CC) $(DEBUG) $(CFLAGS) $(CINCS) -c $< -o $@
+	$(CC) $(CFLAGS) $(CINCS) -c $< -o $@
 
 -include $(OBJS:.o=.d)
 
