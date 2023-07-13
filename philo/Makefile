@@ -16,9 +16,9 @@ COL_RESET	=	\033[0m
 
 # Compiler Options
 CC		=	cc
+CC		=	-g3 -gdwarf-4
 CFLAGS	=	-Wall -Wextra -Werror -MD -pthread
 CINCS	=	-I./$(INCDIR)
-DEBUG	=	-g3 -gdwarf-4
 
 # Files
 SRCS	:=	main.c \
@@ -38,18 +38,17 @@ $(NAME): $(OBJS)
 	$(CC) $(DEBUG) $(CFLAGS) $(OBJS) -o $(NAME)
 
 clean:
-	$(RM) $(OBJS)
-	$(RM) $(OBJS:.o=.d)
+	$(RM) $(OBJDIR)
 
 fclean: clean
 	$(RM) $(NAME)
 
 re: fclean all
 
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
-
-$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
+	@if [ ! -d $(dir $@)]; then \
+		mkdir -p $(dir $@); \
+	fi
 	$(CC) $(DEBUG) $(CFLAGS) $(CINCS) -c $< -o $@
 
 -include $(OBJS:.o=.d)

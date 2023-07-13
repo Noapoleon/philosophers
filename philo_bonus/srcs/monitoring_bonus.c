@@ -6,7 +6,7 @@
 /*   By: nlegrand <nlegrand@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 03:13:35 by nlegrand          #+#    #+#             */
-/*   Updated: 2023/03/13 05:13:52 by nlegrand         ###   ########.fr       */
+/*   Updated: 2023/03/14 19:01:06 by nlegrand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,9 @@ void	*meals_monitoring(void *arg)
 		sem_wait(data->ate_sem);
 		++count;
 	}
+	kill_n_children(data, data->rules.num_philos);
 	close_sems(data);
 	unlink_sems();
-	kill_n_children(data, data->rules.num_philos);
 	free(data->pids);
 	exit(EXIT_SUCCESS);
 }
