@@ -36,22 +36,21 @@ all: $(NAME)
 bonus: all
 
 $(NAME): $(OBJS)
-	$(CC) $(DEBUG) $(CFLAGS) $(OBJS) -o $(NAME)
-
-clean:
-	$(RM) $(OBJS)
-	$(RM) $(OBJS:.o=.d)
-
-fclean: clean
-	$(RM) $(NAME)
-
-re: fclean all
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@if [ ! -d $(dir $@) ]; then \
 		mkdir -p $(dir $@); \
 	fi
-	$(CC) $(DEBUG) $(CFLAGS) $(CINCS) -c $< -o $@
+	$(CC) $(CFLAGS) $(CINCS) -c $< -o $@
+
+clean:
+	$(RM) $(OBJDIR)
+
+fclean: clean
+	$(RM) $(NAME)
+
+re: fclean all
 
 -include $(OBJS:.o=.d)
 
