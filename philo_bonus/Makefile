@@ -15,8 +15,7 @@ COL_OK		=	\033[32;1m
 COL_RESET	=	\033[0m
 
 # Compiler Options
-#CC		=	cc
-CC		=	cc -fsanitize=address
+CC		=	cc
 CFLAGS	=	-Wall -Wextra -Werror -MD -pthread
 CINCS	=	-I./$(INCDIR)
 
